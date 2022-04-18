@@ -1,0 +1,10 @@
+web:
+  port: 8081
+  file_path: /Users/knight2347/knight/students
+
+mysql:
+  host: 192.168.30.217
+  port: 3306
+  user: root
+  password: admin
+  db: db_sentry
