@@ -23,3 +23,20 @@ func UploadCourse(c *context.Context) {
 
 	utils.Success(c, resp)
 }
+
+func StartChat(c *context.Context) {
+	var req proto.StartChatRequest
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, err)
+		return
+	}
+
+	err = services.StartChatHandler(c, &req)
+	if err != nil {
+		utils.Error(c, err)
+		return
+	}
+
+	return
+}

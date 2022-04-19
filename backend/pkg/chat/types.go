@@ -9,9 +9,10 @@ type MessageType int
 
 const (
 	_ MessageType = iota
-	OnlineMessage
-	OfflineMessage
-	CommonMessage
+	MsgOnline
+	MsgOffline
+	MsgRobot
+	MsgCommon
 )
 
 const (
@@ -21,12 +22,13 @@ const (
 
 type Message struct {
 	Type MessageType `json:"type"`
+	Msg  string      `json:"msg"`
 	Name string      `json:"name"`
 }
 
 type ClientId struct {
-	Id     int    `json:"id"`
-	Client Client `json:"client"`
+	Id     int     `json:"id"`
+	Client *Client `json:"client"`
 }
 
 type Client struct {

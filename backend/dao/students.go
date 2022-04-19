@@ -7,21 +7,21 @@ import (
 	"learning/models"
 )
 
-func CreateStudent(ctx context.Context, student *models.Student) error {
+func CreateUser(ctx context.Context, student *models.User) error {
 	return Create(db.GetRds(ctx), student)
 }
 
-func GetAllStudents(ctx context.Context) (results []models.Student, err error) {
+func GetAllUsers(ctx context.Context) (results []models.User, err error) {
 	err = db.GetRds(ctx).
-		Model(&models.Student{}).
+		Model(&models.User{}).
 		Find(&results).
 		Error
 	return
 }
 
-func GetPageStudents(ctx context.Context, page, pageSize int) (results []models.Student, err error) {
+func GetPageUser(ctx context.Context, page, pageSize int) (results []models.User, err error) {
 	err = db.GetRds(ctx).
-		Model(&models.Student{}).
+		Model(&models.User{}).
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&results).
@@ -29,19 +29,19 @@ func GetPageStudents(ctx context.Context, page, pageSize int) (results []models.
 	return
 }
 
-func GetStudentById(ctx context.Context, id int) (result models.Student, err error) {
+func GetUserById(ctx context.Context, id int) (result models.User, err error) {
 	err = GetById(ctx, id, &result)
 	return
 }
 
-func UpdateStudentById(ctx context.Context, id int) error {
+func UpdateUserById(ctx context.Context, id int) error {
 	return nil
 }
 
-func DeleteStudentById(ctx context.Context, id int) error {
+func DeleteUserById(ctx context.Context, id int) error {
 	return db.GetRds(ctx).
-		Model(&models.Student{}).
+		Model(&models.User{}).
 		Where("id = ?", id).
-		Delete(&models.Student{}).
+		Delete(&models.User{}).
 		Error
 }

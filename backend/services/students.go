@@ -10,7 +10,7 @@ import (
 )
 
 func StudentsListHandler(c *context.Context, req *proto.StudentListReq) (*proto.StudentListResp, error) {
-	students, err := dao.GetPageStudents(c.Request.Context(), req.Page, req.PageSize)
+	students, err := dao.GetPageUser(c.Request.Context(), req.Page, req.PageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func StudentCreateHandler(c *context.Context, req *proto.StudentCreateReq) (*pro
 		return nil, err
 	}
 
-	student := models.Student{
+	student := models.User{
 		Name:  req.Name,
 		Age:   req.Age,
 		Sex:   req.Sex,
@@ -59,7 +59,7 @@ func StudentCreateHandler(c *context.Context, req *proto.StudentCreateReq) (*pro
 		Photo: dest,
 	}
 
-	err = dao.CreateStudent(c.Request.Context(), &student)
+	err = dao.CreateUser(c.Request.Context(), &student)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func StudentCreateHandler(c *context.Context, req *proto.StudentCreateReq) (*pro
 }
 
 func StudentDetailHandler(c *context.Context, req *proto.StudentDetailReq) (*proto.StudentDetailResp, error) {
-	student, err := dao.GetStudentById(c.Request.Context(), req.Id)
+	student, err := dao.GetUserById(c.Request.Context(), req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +90,6 @@ func StudentUpdateHandler(c *context.Context, req *proto.StudentUpdateReq) (*pro
 }
 
 func StudentDeleteHander(c *context.Context, req *proto.StudentDeleteReq) error {
-	err := dao.DeleteStudentById(c.Request.Context(), req.Id)
+	err := dao.DeleteUserById(c.Request.Context(), req.Id)
 	return err
 }

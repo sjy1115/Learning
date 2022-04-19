@@ -3,11 +3,10 @@ package jwt
 import (
 	sjwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"learning/config"
 	"learning/consts"
 	"time"
 )
-
-var jwtSecret []byte
 
 type UserToken struct {
 	UserId   int    `json:"user_id"`
@@ -20,7 +19,7 @@ type UserToken struct {
 func GenerateToken(uerId, role int, username, password string) (string, error) {
 	expireTime := time.Now().Add(time.Hour * 24)
 
-	userToken := &UserToken{
+	claims := &UserToken{
 		UserId:   uerId,
 		Username: username,
 		Password: password,
@@ -31,39 +30,44 @@ func GenerateToken(uerId, role int, username, password string) (string, error) {
 		},
 	}
 
-	token := sjwt.NewWithClaims(sjwt.SigningMethodES256, userToken)
+	tokenClaims := sjwt.NewWithClaims(sjwt.SigningMethodHS256, claims)
 
-	tokenStr, err := token.SignedString(jwtSecret)
-	if err != nil {
-		return "", err
-	}
-
-	return tokenStr, nil
+	token, err := tokenClaims.SignedString([]byte(config.Conf.Jwt.Secret))
+	return token, err
 }
 
-func ParseToken(c *gin.Context) error {
+func Parse(c *gin.Context) error {
 	token := c.GetHeader(consts.AuthHeader)
 
-	tokenClaims, err := sjwt.ParseWithClaims(token, &UserToken{}, func(token *sjwt.Token) (interface{}, error) {
-		return jwtSecret, nil
-	})
+	userToken, err := ParseToken(token)
 	if err != nil {
 		return err
 	}
 
-	if claims, ok := tokenClaims.Claims.(*UserToken); ok && tokenClaims.Valid {
-		c.Set(consts.AuthToken, claims)
-		return nil
-	}
+	c.Set(consts.AuthToken, userToken)
 
 	return nil
 }
 
-func GetToken(c *gin.Context) *UserToken {
-	token, _ := c.Get(consts.AuthToken)
-	return token.(*UserToken)
+func ParseToken(token string) (*UserToken, error) {
+	tokenClaims, err := sjwt.ParseWithClaims(token, &UserToken{}, func(token *sjwt.Token) (interface{}, error) {
+		return []byte(config.Conf.Jwt.Secret), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := tokenClaims.Claims.(*UserToken); ok && tokenClaims.Valid {
+		return claims, nil
+	}
+
+	return nil, nil
 }
 
-func InitJwtToken(secret string) {
-	jwtSecret = []byte(secret)
+func GetToken(c *gin.Context) *UserToken {
+	token, _ := c.Get(consts.AuthToken)
+	if token == nil {
+		return nil
+	}
+	return token.(*UserToken)
 }

@@ -10,5 +10,6 @@ func RegisterCourseRouter(router gin.IRouter) {
 	course := router.Group("/course")
 	{
 		course.POST("/", context.WrapperHandler(controllers.UploadCourse))
+		course.GET("/chat", context.WrapperHandler(controllers.StartChat))
 	}
 }

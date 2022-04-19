@@ -16,7 +16,16 @@ var Conf *Config
 
 type Config struct {
 	Web   Web   `yaml:"web" json:"web"`
-	Mysql Mysql `yaml:"mysql"`
+	Mysql Mysql `yaml:"mysql" json:"mysql"`
+	Jwt   Jwt   `yaml:"jwt" json:"jwt"`
+}
+
+type Jwt struct {
+	Secret string `yaml:"secret" json:"secret"`
+}
+
+func (j *Jwt) Load() {
+	j.Secret = "fjkalsfashfhasf"
 }
 
 type Mysql struct {
@@ -60,6 +69,7 @@ func (w *Web) Load() {
 func (c *Config) Load() {
 	c.Mysql.Load()
 	c.Web.Load()
+	c.Jwt.Load()
 }
 
 func Init(confPath string) error {
