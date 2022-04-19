@@ -79,7 +79,7 @@ func init() {
 
 	Bucket = New(
 		WithType(Type(intType)),
-		WithPrefix("/tmp/moresec/"),
+		WithPrefix("/tmp/learning/"),
 		WithAccessKey(os.Getenv("moscan_oss_accessKey")),
 		WithAccessSecret(os.Getenv("moscan_oss_accessSecret")),
 		WithEndpoint(os.Getenv("moscan_oss_endpoint")),
