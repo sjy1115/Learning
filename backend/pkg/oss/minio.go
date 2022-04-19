@@ -112,3 +112,11 @@ func (a *Minio) PutReader(key string, reader io.Reader, size int64) error {
 func (a *Minio) Del(key string) error {
 	return a.client.RemoveObject(context.TODO(), a.bucketName, key, minio.RemoveObjectOptions{})
 }
+
+func (a *Minio) MakeBucket(name string) error {
+	return a.client.MakeBucket(context.TODO(), name, minio.MakeBucketOptions{})
+}
+
+func (a *Minio) BucketExists(name string) (bool, error) {
+	return a.client.BucketExists(context.TODO(), name)
+}

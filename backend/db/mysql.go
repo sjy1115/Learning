@@ -14,7 +14,7 @@ var (
 )
 
 func InitMysql(cfg *config.Config) error {
-	dsn := cfg.Mysql.DSN()
+	dsn := cfg.Mysql.DSN(cfg.Web.Docker)
 
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {

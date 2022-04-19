@@ -2,7 +2,6 @@ package services
 
 import (
 	"path/filepath"
-	"students/config"
 	"students/dao"
 	"students/models"
 	"students/proto"
@@ -46,7 +45,7 @@ func StudentCreateHandler(c *gin.Context, req *proto.StudentCreateReq) (*proto.S
 	// dest := oss.put()
 
 	// 先随机生成字符串
-	dest := filepath.Join(config.Conf.Web.FilePath, utils.RandomString(32)+".png")
+	dest := filepath.Join("", utils.RandomString(32)+".png")
 
 	err = c.SaveUploadedFile(fh, dest)
 	if err != nil {

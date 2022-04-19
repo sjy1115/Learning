@@ -90,4 +90,4 @@ bin/ms_web.tar
 bin/ms_web_risk.tar
 doc/api.html
 bin/ms_thread.tar
-app/bin/
+bin

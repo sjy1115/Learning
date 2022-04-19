@@ -12,5 +12,7 @@ func InitRouter(router gin.IRouter) {
 	api := router.Group("/api")
 	{
 		v1.RegisterStudentsRouter(api)
+		v1.RegisterStaticRouter(api)
+		v1.RegisterCourseRouter(api)
 	}
 }

@@ -9,7 +9,7 @@ import (
 func RegisterStaticRouter(group gin.IRouter) {
 	static := group.Group("/static")
 	{
-		static.GET("/*filename", controllers.AvatarDownload)
-		static.POST("", controllers.AvatarUpload)
+		static.GET("/*path", controllers.StaticDownload)
+		//static.POST("", controllers.AvatarUpload)
 	}
 }
