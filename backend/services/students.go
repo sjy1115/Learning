@@ -3,14 +3,13 @@ package services
 import (
 	"learning/dao"
 	"learning/models"
+	"learning/pkg/context"
 	"learning/proto"
 	"learning/utils"
 	"path/filepath"
-
-	"github.com/gin-gonic/gin"
 )
 
-func StudentsListHandler(c *gin.Context, req *proto.StudentListReq) (*proto.StudentListResp, error) {
+func StudentsListHandler(c *context.Context, req *proto.StudentListReq) (*proto.StudentListResp, error) {
 	students, err := dao.GetPageStudents(c.Request.Context(), req.Page, req.PageSize)
 	if err != nil {
 		return nil, err
@@ -35,7 +34,7 @@ func StudentsListHandler(c *gin.Context, req *proto.StudentListReq) (*proto.Stud
 	return &resp, nil
 }
 
-func StudentCreateHandler(c *gin.Context, req *proto.StudentCreateReq) (*proto.StudentCreateResp, error) {
+func StudentCreateHandler(c *context.Context, req *proto.StudentCreateReq) (*proto.StudentCreateResp, error) {
 	fh, err := c.FormFile("file")
 	if err != nil {
 		return nil, err
@@ -70,7 +69,7 @@ func StudentCreateHandler(c *gin.Context, req *proto.StudentCreateReq) (*proto.S
 	}, nil
 }
 
-func StudentDetailHandler(c *gin.Context, req *proto.StudentDetailReq) (*proto.StudentDetailResp, error) {
+func StudentDetailHandler(c *context.Context, req *proto.StudentDetailReq) (*proto.StudentDetailResp, error) {
 	student, err := dao.GetStudentById(c.Request.Context(), req.Id)
 	if err != nil {
 		return nil, err
@@ -85,12 +84,12 @@ func StudentDetailHandler(c *gin.Context, req *proto.StudentDetailReq) (*proto.S
 	}, nil
 }
 
-func StudentUpdateHandler(c *gin.Context, req *proto.StudentUpdateReq) (*proto.StudentUpdateResp, error) {
+func StudentUpdateHandler(c *context.Context, req *proto.StudentUpdateReq) (*proto.StudentUpdateResp, error) {
 
 	return nil, nil
 }
 
-func StudentDeleteHander(c *gin.Context, req *proto.StudentDeleteReq) error {
+func StudentDeleteHander(c *context.Context, req *proto.StudentDeleteReq) error {
 	err := dao.DeleteStudentById(c.Request.Context(), req.Id)
 	return err
 }

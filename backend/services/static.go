@@ -1,16 +1,15 @@
 package services
 
 import (
+	"learning/pkg/context"
 	"learning/pkg/oss"
 	"learning/proto"
 	"net/url"
 	"path/filepath"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
-func StaticDownloadHandler(c *gin.Context, req *proto.AvatarDownloadReq) (*proto.AvatarDownloadResp, error) {
+func StaticDownloadHandler(c *context.Context, req *proto.DownloadReq) (*proto.AvatarDownloadResp, error) {
 	path := c.Param("path")
 
 	data, err := oss.Bucket.Content(path)

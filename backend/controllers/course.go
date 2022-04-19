@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
+	"learning/pkg/context"
 	"learning/proto"
 	"learning/services"
 	"learning/utils"
 )
 
-func UploadCourse(c *gin.Context) {
+func UploadCourse(c *context.Context) {
 	var req proto.UploadCourseRequest
 	err := c.Bind(&req)
 	if err != nil {

@@ -4,7 +4,7 @@ type AvatarUploadReq struct{}
 
 type AvatarUploadResp struct{}
 
-type AvatarDownloadReq struct {
+type DownloadReq struct {
 	Path string `json:"path"`
 }
 

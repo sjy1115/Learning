@@ -1,6 +1,6 @@
 package models
 
-type Student struct {
+type User struct {
 	Id    int    `json:"id"`
 	Age   int    `json:"age"`
 	Name  string `json:"name"`
@@ -9,6 +9,6 @@ type Student struct {
 	Photo string `json:"photo"`
 }
 
-func (Student) TableName() string {
+func (u User) TableName() string {
 	return "students"
 }

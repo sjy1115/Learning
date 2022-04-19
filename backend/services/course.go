@@ -1,12 +1,12 @@
 package services
 
 import (
-	"github.com/gin-gonic/gin"
+	"learning/pkg/context"
 	"learning/pkg/oss"
 	"learning/proto"
 )
 
-func UploadCourseHandler(c *gin.Context, req *proto.UploadCourseRequest) (resp interface{}, err error) {
+func UploadCourseHandler(c *context.Context, req *proto.UploadCourseRequest) (resp interface{}, err error) {
 	//fileName := req.Filename
 
 	fh, err := c.FormFile("file")

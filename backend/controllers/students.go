@@ -1,16 +1,19 @@
 package controllers
 
 import (
+	"learning/pkg/context"
 	"learning/proto"
 	"learning/services"
 	"learning/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
-func StudentList(c *gin.Context) {
+func StudentList(c *context.Context) {
 	var req proto.StudentListReq
-	c.Bind(&req)
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, err)
+		return
+	}
 
 	resp, err := services.StudentsListHandler(c, &req)
 	if err != nil {
@@ -21,7 +24,7 @@ func StudentList(c *gin.Context) {
 	utils.Success(c, resp)
 }
 
-func StudentCreate(c *gin.Context) {
+func StudentCreate(c *context.Context) {
 	var req proto.StudentCreateReq
 	err := c.Bind(&req)
 	if err != nil {
@@ -37,9 +40,13 @@ func StudentCreate(c *gin.Context) {
 	utils.Success(c, resp)
 }
 
-func StudentDetail(c *gin.Context) {
+func StudentDetail(c *context.Context) {
 	var req proto.StudentDetailReq
-	c.Bind(&req)
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, err)
+		return
+	}
 
 	resp, err := services.StudentDetailHandler(c, &req)
 	if err != nil {
@@ -50,9 +57,13 @@ func StudentDetail(c *gin.Context) {
 	utils.Success(c, resp)
 }
 
-func StudentUpdate(c *gin.Context) {
+func StudentUpdate(c *context.Context) {
 	var req proto.StudentUpdateReq
-	c.Bind(&req)
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, err)
+		return
+	}
 
 	resp, err := services.StudentUpdateHandler(c, &req)
 	if err != nil {
@@ -63,11 +74,15 @@ func StudentUpdate(c *gin.Context) {
 	utils.Success(c, resp)
 }
 
-func StudentDelete(c *gin.Context) {
+func StudentDelete(c *context.Context) {
 	var req proto.StudentDeleteReq
-	c.Bind(&req)
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, err)
+		return
+	}
 
-	err := services.StudentDeleteHander(c, &req)
+	err = services.StudentDeleteHander(c, &req)
 	if err != nil {
 		utils.Error(c, err)
 		return
