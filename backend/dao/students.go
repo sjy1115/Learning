@@ -3,8 +3,8 @@ package dao
 import (
 	"context"
 
-	"students/db"
-	"students/models"
+	"learning/db"
+	"learning/models"
 )
 
 func CreateStudent(ctx context.Context, student *models.Student) error {

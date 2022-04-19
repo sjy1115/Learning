@@ -2,7 +2,7 @@ package dao
 
 import (
 	"context"
-	"students/db"
+	"learning/db"
 
 	"gorm.io/gorm"
 )

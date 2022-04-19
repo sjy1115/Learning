@@ -1,5 +1,6 @@
 package consts
 
 const (
-	BUCKET = ""
+	STUDENT = 1
+	TEACHER = 2
 )

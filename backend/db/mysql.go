@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"students/config"
+	"learning/config"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

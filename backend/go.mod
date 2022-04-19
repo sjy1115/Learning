@@ -1,4 +1,4 @@
-module students
+module learning
 
 go 1.18
 
@@ -6,9 +6,9 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/minio/minio-go/v7 v7.0.24
 	go.uber.org/zap v1.21.0
-	gopkg.in/yaml.v2 v2.2.8
-	gorm.io/driver/mysql v1.2.1
-	gorm.io/gorm v1.22.4
+	gopkg.in/yaml.v2 v2.4.0
+	gorm.io/driver/mysql v1.3.3
+	gorm.io/gorm v1.23.4
 )
 
 require (
@@ -20,9 +20,9 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/google/uuid v1.1.1 // indirect
-	github.com/gopherjs/gopherjs v0.0.0-20220418083847-b4356dcedd79 // indirect
+	github.com/gopherjs/gopherjs v0.0.0-20220418115556-a87c66b2e45f // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.3 // indirect
+	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/klauspost/compress v1.13.5 // indirect

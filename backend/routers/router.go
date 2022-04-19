@@ -1,7 +1,7 @@
 package routers
 
 import (
-	v1 "students/routers/api/v1"
+	v1 "learning/routers/api/v1"
 
 	"github.com/gin-gonic/gin"
 )

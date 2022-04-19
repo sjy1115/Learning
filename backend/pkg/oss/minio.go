@@ -4,10 +4,10 @@ import (
 	"context"
 	"io"
 	"io/ioutil"
+	"learning/pkg/errors"
+	"learning/utils"
 	"os"
 	"path/filepath"
-	"students/pkg/errors"
-	"students/utils"
 	"time"
 
 	"github.com/minio/minio-go/v7"

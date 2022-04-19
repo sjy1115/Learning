@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"students/proto"
-	"students/services"
-	"students/utils"
+	"learning/proto"
+	"learning/services"
+	"learning/utils"
 )
 
 func UploadCourse(c *gin.Context) {

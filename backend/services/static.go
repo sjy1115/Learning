@@ -1,11 +1,11 @@
 package services
 
 import (
+	"learning/pkg/oss"
+	"learning/proto"
 	"net/url"
 	"path/filepath"
 	"strings"
-	"students/pkg/oss"
-	"students/proto"
 
 	"github.com/gin-gonic/gin"
 )

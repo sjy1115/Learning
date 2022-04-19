@@ -1,11 +1,11 @@
 package services
 
 import (
+	"learning/dao"
+	"learning/models"
+	"learning/proto"
+	"learning/utils"
 	"path/filepath"
-	"students/dao"
-	"students/models"
-	"students/proto"
-	"students/utils"
 
 	"github.com/gin-gonic/gin"
 )

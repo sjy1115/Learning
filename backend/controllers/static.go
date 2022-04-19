@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"students/proto"
-	"students/services"
-	"students/utils"
+	"learning/proto"
+	"learning/services"
+	"learning/utils"
 
 	"github.com/gin-gonic/gin"
 )

@@ -2,8 +2,8 @@ package services
 
 import (
 	"github.com/gin-gonic/gin"
-	"students/pkg/oss"
-	"students/proto"
+	"learning/pkg/oss"
+	"learning/proto"
 )
 
 func UploadCourseHandler(c *gin.Context, req *proto.UploadCourseRequest) (resp interface{}, err error) {

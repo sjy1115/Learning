@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"learning/config"
+	"learning/db"
+	"learning/routers"
 	"log"
-	"students/config"
-	"students/db"
-	"students/routers"
 
 	"github.com/gin-gonic/gin"
 )

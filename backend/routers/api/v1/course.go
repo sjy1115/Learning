@@ -2,7 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"students/controllers"
+	"learning/controllers"
 )
 
 func RegisterCourseRouter(router gin.IRouter) {

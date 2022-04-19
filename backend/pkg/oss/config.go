@@ -1,8 +1,8 @@
 package oss
 
 import (
+	"learning/pkg/errors"
 	"path/filepath"
-	"students/pkg/errors"
 )
 
 type Config struct {

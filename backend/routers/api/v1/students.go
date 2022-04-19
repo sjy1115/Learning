@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"students/controllers"
+	"learning/controllers"
 
 	"github.com/gin-gonic/gin"
 )

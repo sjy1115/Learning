@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"learning/proto"
 	"net/http"
-	"students/proto"
 
 	"github.com/gin-gonic/gin"
 )
