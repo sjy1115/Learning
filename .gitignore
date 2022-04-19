@@ -21,7 +21,7 @@
 # vendor/
 
 ### Go Patch ###
-/vendor/
+backend/vendor
 /Godeps/
 
 ### macOS ###
