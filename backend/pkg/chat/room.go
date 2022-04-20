@@ -37,6 +37,16 @@ type Room struct {
 	MessageChan chan *Message
 }
 
+func NewChatRoom(courseId int) *Room {
+	return &Room{
+		CourseId: courseId,
+
+		OnlineChan:  make(chan *Client, 10),
+		OfflineChan: make(chan *Client, 10),
+		MessageChan: make(chan *Message, 10),
+	}
+}
+
 func (r *Room) OnlineNum() int {
 	return r.onlineNum
 }
@@ -62,6 +72,7 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
 		Id:     id,
 		Client: client,
 	})
+	r.onlineNum++
 	r.mux.Unlock()
 
 	r.OnlineChan <- client
@@ -77,6 +88,7 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
 				break
 			}
 		}
+		r.onlineNum--
 		r.mux.Unlock()
 
 		conn.Close()
@@ -108,6 +120,11 @@ func (r *Room) Broadcast(ctx context.Context) {
 				Msg:  fmt.Sprintf("%s加入聊天室", client.User.Name),
 				Type: MsgOnline,
 			}
+
+			r.mux.Lock()
+			msg.OnlineNum = r.onlineNum
+			r.mux.Unlock()
+
 			fmt.Println("welcome", client.User.Name)
 			r.MessageChan <- msg
 		case client := <-r.OfflineChan:
@@ -116,6 +133,11 @@ func (r *Room) Broadcast(ctx context.Context) {
 				Msg:  fmt.Sprintf("%s离开聊天室", client.User.Name),
 				Type: MsgOffline,
 			}
+
+			r.mux.Lock()
+			msg.OnlineNum = r.onlineNum
+			r.mux.Unlock()
+
 			fmt.Println("bye", client.User.Name)
 			r.MessageChan <- msg
 		case msg := <-r.MessageChan:
@@ -127,35 +149,27 @@ func (r *Room) Broadcast(ctx context.Context) {
 
 func (r *Room) SendMessage(msg *Message) {
 	switch msg.Type {
-	case MsgOnline:
+	case MsgOnline, MsgOffline:
 		for _, clientId := range r.Clients {
-			err := clientId.Client.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Msg))
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"err": err.Error(),
-				}).Error("write message failed")
-			}
-		}
-	case MsgOffline:
-		for _, clientId := range r.Clients {
-			err := clientId.Client.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Msg))
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"err": err.Error(),
-				}).Error("write message failed")
+			if clientId.Client.User.Name != msg.Name {
+				err := clientId.Client.Conn.WriteJSON(msg)
+				if err != nil {
+					logrus.WithFields(logrus.Fields{
+						"err": err.Error(),
+					}).Error("write message failed")
+				}
 			}
 		}
 	case MsgRobot:
+
 	case MsgCommon:
 		for _, clientId := range r.Clients {
-			//if clientId.Client.User.Name != msg.Name {
-			err := clientId.Client.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Msg))
+			err := clientId.Client.Conn.WriteJSON(msg)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err.Error(),
 				}).Error("write message failed")
 			}
-			//}
 		}
 	}
 }

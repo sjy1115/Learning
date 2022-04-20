@@ -21,9 +21,10 @@ const (
 )
 
 type Message struct {
-	Type MessageType `json:"type"`
-	Msg  string      `json:"msg"`
-	Name string      `json:"name"`
+	Type      MessageType `json:"type,omitempty"`
+	Msg       string      `json:"msg,omitempty"`
+	Name      string      `json:"name,omitempty"`
+	OnlineNum int         `json:"online_num,omitempty"`
 }
 
 type ClientId struct {

@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"learning/db/cache"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -15,9 +16,11 @@ type Loader interface {
 var Conf *Config
 
 type Config struct {
-	Web   Web   `yaml:"web" json:"web"`
-	Mysql Mysql `yaml:"mysql" json:"mysql"`
-	Jwt   Jwt   `yaml:"jwt" json:"jwt"`
+	Web       Web          `yaml:"web" json:"web"`
+	Mysql     Mysql        `yaml:"mysql" json:"mysql"`
+	Jwt       Jwt          `yaml:"jwt" json:"jwt"`
+	Redis     cache.Config `yaml:"redis" json:"redis"`
+	IgnoreUrl []string     `yaml:"ignoreUrl" json:"ignoreUrl"`
 }
 
 type Jwt struct {
@@ -70,6 +73,11 @@ func (c *Config) Load() {
 	c.Mysql.Load()
 	c.Web.Load()
 	c.Jwt.Load()
+	c.Redis.Load()
+
+	c.IgnoreUrl = []string{
+		"/api",
+	}
 }
 
 func Init(confPath string) error {

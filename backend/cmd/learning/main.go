@@ -4,7 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"learning/config"
-	"learning/db"
+	"learning/db/cache"
+	"learning/db/mysql"
 	"learning/routers"
 	"log"
 
@@ -23,10 +24,11 @@ func main() {
 		panic(err)
 	}
 
-	err = db.InitMysql(config.Conf)
+	err = mysql.InitMysql(config.Conf)
 	if err != nil {
 		panic(err)
 	}
+	cache.InitRedis(&config.Conf.Redis)
 
 	r := gin.Default()
 
