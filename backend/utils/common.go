@@ -6,9 +6,13 @@ import (
 	"net/http"
 )
 
-func Error(c *context.Context, err error) {
+const (
+	ErrorCode = 100
+)
+
+func Error(c *context.Context, code int, err error) {
 	c.JSON(http.StatusOK, proto.BaseResp{
-		Code:    http.StatusInternalServerError,
+		Code:    code,
 		Message: err.Error(),
 	})
 }

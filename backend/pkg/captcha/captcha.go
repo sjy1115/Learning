@@ -1,11 +1,14 @@
 package captcha
 
-import "github.com/mojocn/base64Captcha"
+import (
+	"github.com/mojocn/base64Captcha"
+	"learning/db/cache"
+)
 
 var captcha *base64Captcha.Captcha
 
 func init() {
-	captcha = base64Captcha.NewCaptcha(base64Captcha.DefaultDriverDigit, newRedisStore(nil))
+	captcha = base64Captcha.NewCaptcha(base64Captcha.DefaultDriverDigit, newRedisStore(cache.RedisCmd()))
 }
 
 func GenerateCaptcha() (string, string, error) {

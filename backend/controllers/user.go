@@ -12,13 +12,13 @@ func UserLogin(c *context.Context) {
 
 	err := c.Bind(&req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
 	resp, err := services.UserLoginHandler(c, &req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
@@ -28,7 +28,7 @@ func UserLogin(c *context.Context) {
 func UserLogout(c *context.Context) {
 	resp, err := services.UserLogoutHandler(c)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
@@ -40,13 +40,13 @@ func UserRegister(c *context.Context) {
 
 	err := c.Bind(&req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
 	resp, err := services.UserRegisterHandler(c, &req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func UserRegister(c *context.Context) {
 func VerifyCode(c *context.Context) {
 	resp, err := services.VerifyCodeHandler(c)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 

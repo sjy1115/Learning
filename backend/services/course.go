@@ -43,7 +43,7 @@ func StartChatHandler(c *context.Context, req *proto.StartChatRequest) error {
 		WriteBufferSize: 1024,
 	}).Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return err
 	}
 
@@ -51,7 +51,7 @@ func StartChatHandler(c *context.Context, req *proto.StartChatRequest) error {
 
 	userToken, err := jwt.ParseToken(token)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return err
 	}
 

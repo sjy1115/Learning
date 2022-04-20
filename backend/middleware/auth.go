@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"learning/consts"
+	"learning/db/cache"
 	"learning/pkg/jwt"
 	"strings"
 )
@@ -37,6 +38,35 @@ func Auth() gin.HandlerFunc {
 			c.JSON(401, gin.H{
 				"code": 401,
 				"msg":  err.Error(),
+			})
+			c.Abort()
+		}
+
+		exists, _ := cache.Exist(c.Request.Context(), cache.UserTokenKey(c.MustGet(consts.AuthToken).(*jwt.UserToken).UserId))
+		if !exists {
+			logrus.WithFields(logrus.Fields{
+				"token":   token,
+				"user id": c.MustGet(consts.AuthToken).(*jwt.UserToken).UserId,
+			}).Error("user not exists")
+
+			c.JSON(401, gin.H{
+				"code": 401,
+				"msg":  "user not exists",
+			})
+			c.Abort()
+		}
+
+		rdsToken, _ := cache.Get(c.Request.Context(), cache.UserTokenKey(c.MustGet(consts.AuthToken).(*jwt.UserToken).UserId))
+		if token != rdsToken {
+			logrus.WithFields(logrus.Fields{
+				"token":     token,
+				"rds token": rdsToken,
+				"user id":   c.MustGet(consts.AuthToken).(*jwt.UserToken).UserId,
+			}).Error("token not match")
+
+			c.JSON(401, gin.H{
+				"code": 401,
+				"msg":  "token not match",
 			})
 			c.Abort()
 		}

@@ -7,8 +7,8 @@ import (
 	"learning/models"
 )
 
-func CreateUser(ctx context.Context, student *models.User) error {
-	return Create(mysql.GetRds(ctx), student)
+func CreateUser(ctx context.Context, user *models.User) error {
+	return Create(mysql.GetRds(ctx), user)
 }
 
 func GetAllUsers(ctx context.Context) (results []models.User, err error) {
@@ -31,6 +31,43 @@ func GetPageUser(ctx context.Context, page, pageSize int) (results []models.User
 
 func GetUserById(ctx context.Context, id int) (result models.User, err error) {
 	err = GetById(ctx, id, &result)
+	return
+}
+
+func UserExistsByName(ctx context.Context, name string) (exists bool, err error) {
+	var user []models.User
+	err = mysql.GetRds(ctx).
+		Model(&models.User{}).
+		Where("name = ?", name).
+		Find(&user).
+		Error
+	if err != nil {
+		return
+	}
+
+	return len(user) > 0, nil
+}
+
+func UserExistsByPhone(ctx context.Context, phone string) (exists bool, err error) {
+	var user []models.User
+	err = mysql.GetRds(ctx).
+		Model(&models.User{}).
+		Where("phone = ?", phone).
+		Find(&user).
+		Error
+	if err != nil {
+		return
+	}
+
+	return len(user) > 0, nil
+}
+
+func GetUserByName(ctx context.Context, name string) (result models.User, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&models.User{}).
+		Where("name = ?", name).
+		First(&result).
+		Error
 	return
 }
 

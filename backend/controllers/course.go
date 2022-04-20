@@ -11,13 +11,13 @@ func UploadCourse(c *context.Context) {
 	var req proto.UploadCourseRequest
 	err := c.Bind(&req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
 	resp, err := services.UploadCourseHandler(c, &req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
@@ -28,13 +28,13 @@ func StartChat(c *context.Context) {
 	var req proto.StartChatRequest
 	err := c.Bind(&req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 
 	err = services.StartChatHandler(c, &req)
 	if err != nil {
-		utils.Error(c, err)
+		utils.Error(c, utils.ErrorCode, err)
 		return
 	}
 

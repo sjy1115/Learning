@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"sync"
+	"time"
 )
 
 var (
@@ -17,7 +18,6 @@ type Config struct {
 	Addr       string `yaml:"addr" json:"addr"`
 	DockerAddr string `yaml:"docker_addr" json:"docker_addr"`
 	Port       int    `yaml:"port" json:"port"`
-	Username   string `yaml:"username" json:"username"`
 	Password   string `yaml:"password" json:"password"`
 	DB         int    `yaml:"db" json:"db"`
 }
@@ -40,7 +40,6 @@ func InitRedis(cfg *Config) {
 
 		redisCli = redis.NewClient(&redis.Options{
 			Addr:     addr,
-			Username: cfg.Username,
 			Password: cfg.Password,
 			DB:       cfg.DB,
 		})
@@ -52,6 +51,27 @@ func InitRedis(cfg *Config) {
 
 		panic("redis init failed")
 	})
+}
+
+func Set(ctx context.Context, key string, value interface{}) error {
+	return redisCli.Set(ctx, key, value, 0).Err()
+}
+
+func SetEx(ctx context.Context, key string, value string, second int) error {
+	return redisCli.Set(ctx, key, value, time.Duration(second)*time.Second).Err()
+}
+
+func Get(ctx context.Context, key string) (string, error) {
+	return redisCli.Get(ctx, key).Result()
+}
+
+func Exist(ctx context.Context, key string) (bool, error) {
+	num, err := redisCli.Exists(ctx, key).Result()
+	if err != nil {
+		return false, err
+	}
+
+	return num > 0, nil
 }
 
 func RedisCmd() *redis.Client {

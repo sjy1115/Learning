@@ -76,7 +76,7 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
 	r.mux.Unlock()
 
 	r.OnlineChan <- client
-	fmt.Println("online:", client.User.Name)
+	fmt.Println("online:", client.User.Username)
 
 	defer func() {
 		r.OfflineChan <- client
@@ -106,7 +106,7 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
 		r.MessageChan <- &Message{
 			Type: MsgCommon,
 			Msg:  string(data),
-			Name: client.User.Name,
+			Name: client.User.Username,
 		}
 	}
 }
@@ -116,8 +116,8 @@ func (r *Room) Broadcast(ctx context.Context) {
 		select {
 		case client := <-r.OnlineChan:
 			msg := &Message{
-				Name: client.User.Name,
-				Msg:  fmt.Sprintf("%s加入聊天室", client.User.Name),
+				Name: client.User.Username,
+				Msg:  fmt.Sprintf("%s加入聊天室", client.User.Username),
 				Type: MsgOnline,
 			}
 
@@ -125,12 +125,12 @@ func (r *Room) Broadcast(ctx context.Context) {
 			msg.OnlineNum = r.onlineNum
 			r.mux.Unlock()
 
-			fmt.Println("welcome", client.User.Name)
+			fmt.Println("welcome", client.User.Username)
 			r.MessageChan <- msg
 		case client := <-r.OfflineChan:
 			msg := &Message{
-				Name: client.User.Name,
-				Msg:  fmt.Sprintf("%s离开聊天室", client.User.Name),
+				Name: client.User.Username,
+				Msg:  fmt.Sprintf("%s离开聊天室", client.User.Username),
 				Type: MsgOffline,
 			}
 
@@ -138,7 +138,7 @@ func (r *Room) Broadcast(ctx context.Context) {
 			msg.OnlineNum = r.onlineNum
 			r.mux.Unlock()
 
-			fmt.Println("bye", client.User.Name)
+			fmt.Println("bye", client.User.Username)
 			r.MessageChan <- msg
 		case msg := <-r.MessageChan:
 			fmt.Println("broadcast", msg.Name)
@@ -151,7 +151,7 @@ func (r *Room) SendMessage(msg *Message) {
 	switch msg.Type {
 	case MsgOnline, MsgOffline:
 		for _, clientId := range r.Clients {
-			if clientId.Client.User.Name != msg.Name {
+			if clientId.Client.User.Username != msg.Name {
 				err := clientId.Client.Conn.WriteJSON(msg)
 				if err != nil {
 					logrus.WithFields(logrus.Fields{

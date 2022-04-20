@@ -16,9 +16,22 @@ type LogoutResponse struct {
 }
 
 type RegisterRequest struct {
+	Username string `json:"username" form:"username"`
+	Phone    string `json:"phone" form:"phone"`
+	College  string `json:"college" form:"college"`
+	Role     string `json:"role" form:"role"`
+	Gender   int    `json:"gender" form:"gender"`
+	Number   string `json:"number" form:"number"`
+	Password string `json:"password" form:"password"`
 }
 
 type RegisterResponse struct {
+	Phone    string `json:"phone" form:"phone"`
+	School   string `json:"school" form:"school"`
+	ROle     string `json:"role" form:"role"`
+	Gender   int    `json:"gender" form:"gender"`
+	Number   string `json:"number" form:"number"`
+	Password string `json:"password" form:"password"`
 }
 
 type VerifyCodeResponse struct {
