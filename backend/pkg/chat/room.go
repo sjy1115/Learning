@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"learning/dao"
 	"sync"
+	"time"
 )
 
 var RoomInstance *Room
@@ -104,9 +105,10 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
 		}
 
 		r.MessageChan <- &Message{
-			Type: MsgCommon,
-			Msg:  string(data),
-			Name: client.User.Username,
+			Type:     MsgCommon,
+			Msg:      string(data),
+			Name:     client.User.Username,
+			SendTime: time.Now().Unix(),
 		}
 	}
 }
@@ -116,9 +118,10 @@ func (r *Room) Broadcast(ctx context.Context) {
 		select {
 		case client := <-r.OnlineChan:
 			msg := &Message{
-				Name: client.User.Username,
-				Msg:  fmt.Sprintf("%s加入聊天室", client.User.Username),
-				Type: MsgOnline,
+				Name:     client.User.Username,
+				Msg:      fmt.Sprintf("%s加入聊天室", client.User.Username),
+				Type:     MsgOnline,
+				SendTime: time.Now().Unix(),
 			}
 
 			r.mux.Lock()
@@ -129,9 +132,10 @@ func (r *Room) Broadcast(ctx context.Context) {
 			r.MessageChan <- msg
 		case client := <-r.OfflineChan:
 			msg := &Message{
-				Name: client.User.Username,
-				Msg:  fmt.Sprintf("%s离开聊天室", client.User.Username),
-				Type: MsgOffline,
+				Name:     client.User.Username,
+				Msg:      fmt.Sprintf("%s离开聊天室", client.User.Username),
+				Type:     MsgOffline,
+				SendTime: time.Now().Unix(),
 			}
 
 			r.mux.Lock()

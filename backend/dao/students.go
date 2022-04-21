@@ -38,7 +38,7 @@ func UserExistsByName(ctx context.Context, name string) (exists bool, err error)
 	var user []models.User
 	err = mysql.GetRds(ctx).
 		Model(&models.User{}).
-		Where("name = ?", name).
+		Where("username = ?", name).
 		Find(&user).
 		Error
 	if err != nil {
@@ -62,10 +62,19 @@ func UserExistsByPhone(ctx context.Context, phone string) (exists bool, err erro
 	return len(user) > 0, nil
 }
 
+func GetUserByPhone(ctx context.Context, phone string) (user models.User, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&models.User{}).
+		Where("phone = ?", phone).
+		First(&user).
+		Error
+	return
+}
+
 func GetUserByName(ctx context.Context, name string) (result models.User, err error) {
 	err = mysql.GetRds(ctx).
 		Model(&models.User{}).
-		Where("name = ?", name).
+		Where("username = ?", name).
 		First(&result).
 		Error
 	return

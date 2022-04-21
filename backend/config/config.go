@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"learning/db/cache"
+	"learning/pkg/log"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -20,6 +21,7 @@ type Config struct {
 	Mysql     Mysql        `yaml:"mysql" json:"mysql"`
 	Jwt       Jwt          `yaml:"jwt" json:"jwt"`
 	Redis     cache.Config `yaml:"redis" json:"redis"`
+	Log       log.Log      `yaml:"log" json:"log"`
 	IgnoreUrl []string     `yaml:"ignoreUrl" json:"ignoreUrl"`
 }
 
@@ -35,6 +37,7 @@ type Mysql struct {
 	Host       string `json:"host" yaml:"host"`
 	DockerHost string `json:"docker_host" yaml:"docker_host"`
 	Port       int    `json:"port" yaml:"port"`
+	DockerPort int    `json:"docker_port" yaml:"docker_port"`
 	User       string `json:"user" yaml:"user"`
 	Password   string `json:"password" yaml:"password"`
 	DB         string `json:"db" yaml:"db"`
@@ -44,6 +47,7 @@ func (m *Mysql) Load() {
 	m.Host = "121.199.167.227"
 	m.DockerHost = "mysql"
 	m.Port = 3307
+	m.DockerPort = 3306
 	m.User = "root"
 	m.Password = "admin"
 	m.DB = "learning"
@@ -52,7 +56,7 @@ func (m *Mysql) Load() {
 func (m Mysql) DSN(docker bool) string {
 	if docker {
 		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
-			m.User, m.Password, m.DockerHost, m.Port, m.DB)
+			m.User, m.Password, m.DockerHost, m.DockerPort, m.DB)
 	} else {
 		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 			m.User, m.Password, m.Host, m.Port, m.DB)
@@ -66,7 +70,7 @@ type Web struct {
 
 func (w *Web) Load() {
 	w.Port = 8081
-	w.Docker = false
+	w.Docker = true
 }
 
 func (c *Config) Load() {
@@ -74,9 +78,14 @@ func (c *Config) Load() {
 	c.Web.Load()
 	c.Jwt.Load()
 	c.Redis.Load()
-
+	c.Log.Load()
 	c.IgnoreUrl = []string{
-		"/api",
+		"/api/static/*",
+		"/api/user/login",
+		"/api/user/logout",
+		"/api/user/register",
+		"/api/course/chat",
+		"/api/user/verifycode",
 	}
 }
 

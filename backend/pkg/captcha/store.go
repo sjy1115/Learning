@@ -2,30 +2,27 @@ package captcha
 
 import (
 	"context"
-	"github.com/go-redis/redis/v8"
+	"github.com/sirupsen/logrus"
+	"learning/db/cache"
 	"strings"
-	"time"
 )
 
 type RedisStore struct {
-	cli *redis.Client
 }
 
 //Set(id string, value string) error
 //    Get(id string, clear bool) string
 //    Verify(id string, answer string, clear bool) bool
 
-func newRedisStore(cli *redis.Client) *RedisStore {
-	return &RedisStore{
-		cli: cli,
-	}
-}
-
 func (r *RedisStore) Set(id, value string) error {
 	ctx := context.Background()
 
-	_, err := r.cli.Set(ctx, id, value, time.Second*60).Result()
+	err := cache.SetEx(ctx, id, value, 60)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"id":  id,
+			"err": err,
+		}).Error("set captcha")
 		return err
 	}
 
@@ -34,13 +31,19 @@ func (r *RedisStore) Set(id, value string) error {
 
 func (r *RedisStore) Get(id string, clear bool) string {
 	ctx := context.Background()
-	resp, err := r.cli.Get(ctx, id).Result()
+	resp, err := cache.Get(ctx, id)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"id": id,
+		}).Error("get captcha")
 		return ""
 	}
 
 	if clear {
-		r.cli.Del(ctx, id).Result()
+		err = cache.Del(ctx, id)
+		logrus.WithFields(logrus.Fields{
+			"id": id,
+		}).Error("delete captcha")
 	}
 
 	return resp

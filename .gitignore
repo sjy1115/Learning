@@ -91,3 +91,5 @@ bin/ms_web_risk.tar
 doc/api.html
 bin/ms_thread.tar
 bin
+
+backend/build.sh

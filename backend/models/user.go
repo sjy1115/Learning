@@ -6,7 +6,7 @@ type User struct {
 	Phone    string `json:"phone" gorm:"column:phone"`
 	College  string `json:"college" gorm:"column:college"`
 	Role     int    `json:"role" gorm:"column:role"`
-	Gender   int    `json:"gender" gorm:"column:gender"`
+	Gender   string `json:"gender" gorm:"column:gender"`
 	Number   string `json:"number" gorm:"column:number"`
 	Password string `json:"password" gorm:"column:password"`
 	Avatar   string `json:"avatar" gorm:"column:avatar"`

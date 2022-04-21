@@ -25,6 +25,7 @@ type Message struct {
 	Msg       string      `json:"msg,omitempty"`
 	Name      string      `json:"name,omitempty"`
 	OnlineNum int         `json:"online_num,omitempty"`
+	SendTime  int64       `json:"send_time,omitempty"`
 }
 
 type ClientId struct {

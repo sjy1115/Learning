@@ -10,19 +10,21 @@ import (
 
 type UserToken struct {
 	UserId   int    `json:"user_id"`
+	Phone    string `json:"phone"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Role     int    `json:"role"`
 	sjwt.StandardClaims
 }
 
-func GenerateToken(uerId, role int, username, password string) (string, error) {
+func GenerateToken(uerId, role int, username, password, phone string) (string, error) {
 	expireTime := time.Now().Add(time.Hour * 24)
 
 	claims := &UserToken{
 		UserId:   uerId,
 		Username: username,
 		Password: password,
+		Phone:    phone,
 		Role:     role,
 		StandardClaims: sjwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),

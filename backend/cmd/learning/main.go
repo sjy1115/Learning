@@ -3,11 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"learning/config"
 	"learning/db/cache"
 	"learning/db/mysql"
+	"learning/middleware"
+	"learning/pkg/captcha"
+	"learning/pkg/log"
 	"learning/routers"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,9 +33,22 @@ func main() {
 	}
 	cache.InitRedis(&config.Conf.Redis)
 
+	initLog(config.Conf)
+	captcha.InitCaptcha()
+	middleware.InitIgnoreUrl(config.Conf.IgnoreUrl)
+
 	r := gin.Default()
 
 	routers.InitRouter(r)
 
-	log.Fatalln(r.Run(fmt.Sprintf(":%d", config.Conf.Web.Port)))
+	logrus.Fatal(r.Run(fmt.Sprintf(":%d", config.Conf.Web.Port)))
+}
+
+func initLog(cfg *config.Config) {
+	logPath := cfg.Log.LogPath
+	if cfg.Web.Docker {
+		logPath = cfg.Log.DockerLogPath
+	}
+
+	log.InitLog(cfg.Log.Level, logPath)
 }

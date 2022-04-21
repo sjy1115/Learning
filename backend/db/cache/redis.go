@@ -23,12 +23,12 @@ type Config struct {
 }
 
 func (c *Config) Load() {
-	c.Docker = false
+	c.Docker = true
 	c.Addr = "127.0.0.1"
 	c.DockerAddr = "redis"
 	c.Port = 6379
 	c.Password = "admin"
-	c.DB = 1
+	c.DB = 0
 }
 
 func InitRedis(cfg *Config) {
@@ -63,6 +63,10 @@ func SetEx(ctx context.Context, key string, value string, second int) error {
 
 func Get(ctx context.Context, key string) (string, error) {
 	return redisCli.Get(ctx, key).Result()
+}
+
+func Del(ctx context.Context, key string) error {
+	return redisCli.Del(ctx, key).Err()
 }
 
 func Exist(ctx context.Context, key string) (bool, error) {
