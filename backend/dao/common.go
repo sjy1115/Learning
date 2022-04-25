@@ -14,3 +14,7 @@ func GetById(ctx context.Context, id int, result interface{}) error {
 func Create(tx *gorm.DB, data interface{}) error {
 	return tx.Model(data).Create(data).Error
 }
+
+func UpdateColumn(tx *gorm.DB, id int, data interface{}) error {
+	return tx.Model(data).Where("id = ?", id).UpdateColumns(data).Error
+}

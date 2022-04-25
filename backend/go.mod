@@ -10,6 +10,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.24
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/sirupsen/logrus v1.8.1
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	gopkg.in/yaml.v2 v2.4.0

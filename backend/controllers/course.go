@@ -7,6 +7,42 @@ import (
 	"learning/utils"
 )
 
+func CourseList(c *context.Context) {
+	var req proto.CourseListRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.CourseListHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func CourseCreate(c *context.Context) {
+	var req proto.CourseCreateRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.CourseCreateHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func UploadCourse(c *context.Context) {
 	var req proto.UploadCourseRequest
 	err := c.Bind(&req)

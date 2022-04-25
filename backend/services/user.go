@@ -27,7 +27,7 @@ func UserLoginHandler(c *context.Context, req *proto.LoginRequest) (resp *proto.
 		return nil, fmt.Errorf("密码错误")
 	}
 
-	token, err := jwt.GenerateToken(user.Id, user.Role, user.Username, "", req.Phone)
+	token, err := jwt.GenerateToken(user.Id, user.Role, user.Name, "", req.Phone)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,22 @@ func UserLoginHandler(c *context.Context, req *proto.LoginRequest) (resp *proto.
 
 	return &proto.LoginResponse{
 		UserId: user.Id,
+		Role:   0, // TODO add role
 		Token:  token,
+	}, nil
+}
+
+func UserInfoHandler(c *context.Context) (resp *proto.UserInfoResponse, err error) {
+	user, err := dao.GetUserById(c.Ctx, c.UserToken.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &proto.UserInfoResponse{
+		UserId:   user.Id,
+		Role:     0, // TODO add role
+		Username: user.Name,
+		Phone:    user.Phone,
 	}, nil
 }
 
@@ -75,7 +90,7 @@ func UserRegisterHandler(c *context.Context, req *proto.RegisterRequest) (resp *
 
 	user := models.User{
 		Role:     0,
-		Username: req.Username,
+		Name:     req.Username,
 		College:  req.College,
 		Gender:   req.Gender,
 		Number:   req.Number,

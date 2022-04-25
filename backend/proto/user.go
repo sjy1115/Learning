@@ -9,10 +9,18 @@ type LoginRequest struct {
 
 type LoginResponse struct {
 	UserId int    `json:"user_id"`
+	Role   int    `json:"role"`
 	Token  string `json:"token"`
 }
 
 type LogoutResponse struct {
+}
+
+type UserInfoResponse struct {
+	UserId   int    `json:"user_id"`
+	Role     int    `json:"role"` // TODO add role
+	Username string `json:"username"`
+	Phone    string `json:"phone"`
 }
 
 type RegisterRequest struct {
