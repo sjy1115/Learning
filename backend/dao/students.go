@@ -8,7 +8,7 @@ import (
 )
 
 func CreateUser(ctx context.Context, user *models.User) error {
-	return Create(mysql.GetRds(ctx), user)
+	return Create(ctx, user)
 }
 
 func GetAllUsers(ctx context.Context) (results []models.User, err error) {
@@ -38,7 +38,7 @@ func UserExistsByName(ctx context.Context, name string) (exists bool, err error)
 	var user []models.User
 	err = mysql.GetRds(ctx).
 		Model(&models.User{}).
-		Where("username = ?", name).
+		Where("name = ?", name).
 		Find(&user).
 		Error
 	if err != nil {

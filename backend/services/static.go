@@ -1,15 +1,17 @@
 package services
 
 import (
+	"fmt"
 	"learning/pkg/context"
 	"learning/pkg/oss"
 	"learning/proto"
+	"learning/utils"
 	"net/url"
 	"path/filepath"
 	"strings"
 )
 
-func StaticDownloadHandler(c *context.Context, req *proto.DownloadReq) (*proto.AvatarDownloadResp, error) {
+func StaticDownloadHandler(c *context.Context, req *proto.DownloadRequest) (*proto.AvatarDownloadResp, error) {
 	path := c.Param("path")
 
 	data, err := oss.Bucket.Content(path)
@@ -35,4 +37,31 @@ func StaticDownloadHandler(c *context.Context, req *proto.DownloadReq) (*proto.A
 	//http.ServeContent()
 
 	return nil, nil
+}
+
+func StaticUploadHandler(c *context.Context) (resp *proto.StaticUploadResponse, err error) {
+	fh, err := c.FormFile("file")
+	if err != nil {
+		return nil, err
+	}
+
+	resp = &proto.StaticUploadResponse{}
+
+	file, err := fh.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	randomStr := utils.RandomString(32)
+	filePath := fmt.Sprintf("%s-%s", randomStr, fh.Filename)
+
+	err = oss.Bucket.PutReader(filePath, file, fh.Size)
+	if err != nil {
+		return nil, err
+	}
+
+	resp.Path = filePath
+
+	return
 }

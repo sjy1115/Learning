@@ -1,9 +1,12 @@
 package utils
 
-import "math/rand"
+import (
+	"math/rand"
+	"strings"
+)
 
 var (
-	DefaultLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~?<>!@#$%^&*({})+|")
+	DefaultLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 )
 
 func RandomString(n int) string {
@@ -13,4 +16,13 @@ func RandomString(n int) string {
 	}
 
 	return string(b)
+}
+
+func EscapeLIKE(search string) string {
+	return strings.ReplaceAll(
+		strings.ReplaceAll(
+			strings.ReplaceAll(strings.ReplaceAll(search, `\`, `\\`),
+				"_", `\_`),
+			"%", `\%`),
+		"'", `\'`)
 }

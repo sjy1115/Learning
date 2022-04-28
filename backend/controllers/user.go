@@ -25,6 +25,16 @@ func UserLogin(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func UserInfo(c *context.Context) {
+	resp, err := services.UserInfoHandler(c)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func UserLogout(c *context.Context) {
 	resp, err := services.UserLogoutHandler(c)
 	if err != nil {

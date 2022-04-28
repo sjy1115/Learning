@@ -40,7 +40,7 @@ func UserLoginHandler(c *context.Context, req *proto.LoginRequest) (resp *proto.
 
 	return &proto.LoginResponse{
 		UserId: user.Id,
-		Role:   0, // TODO add role
+		Role:   user.Role,
 		Token:  token,
 	}, nil
 }
@@ -53,9 +53,10 @@ func UserInfoHandler(c *context.Context) (resp *proto.UserInfoResponse, err erro
 
 	return &proto.UserInfoResponse{
 		UserId:   user.Id,
-		Role:     0, // TODO add role
+		Role:     user.Role,
 		Username: user.Name,
 		Phone:    user.Phone,
+		Avatar:   user.Avatar,
 	}, nil
 }
 
@@ -81,15 +82,13 @@ func UserRegisterHandler(c *context.Context, req *proto.RegisterRequest) (resp *
 		return nil, fmt.Errorf("手机号已存在")
 	}
 
-	// TODO role get by id
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
 	user := models.User{
-		Role:     0,
+		Role:     req.Role,
 		Name:     req.Username,
 		College:  req.College,
 		Gender:   req.Gender,

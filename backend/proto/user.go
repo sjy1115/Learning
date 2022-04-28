@@ -18,9 +18,10 @@ type LogoutResponse struct {
 
 type UserInfoResponse struct {
 	UserId   int    `json:"user_id"`
-	Role     int    `json:"role"` // TODO add role
+	Role     int    `json:"role"`
 	Username string `json:"username"`
 	Phone    string `json:"phone"`
+	Avatar   string `json:"avatar"`
 }
 
 type RegisterRequest struct {

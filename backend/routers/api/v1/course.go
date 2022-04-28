@@ -9,9 +9,20 @@ import (
 func RegisterCourseRouter(router gin.IRouter) {
 	course := router.Group("/course")
 	{
-		course.GET("/", context.WrapperHandler(controllers.CourseList))
-		course.POST("/", context.WrapperHandler(controllers.CourseCreate))
-		course.POST("/", context.WrapperHandler(controllers.UploadCourse))
+		course.GET("", context.WrapperHandler(controllers.CourseList))
+		course.GET("/:id", context.WrapperHandler(controllers.CourseDetail))
+		course.POST("", context.WrapperHandler(controllers.CourseCreate))
+		course.PUT("/:id", context.WrapperHandler(controllers.CourseUpdate))
+		course.DELETE("/:id", context.WrapperHandler(controllers.CourseDelete))
+		course.POST("/upload", context.WrapperHandler(controllers.UploadCourse))
 		course.GET("/chat", context.WrapperHandler(controllers.StartChat))
+	}
+	chapter := router.Group("/chapter")
+	{
+		chapter.GET("", context.WrapperHandler(controllers.ChapterList))
+		chapter.GET("/:id", context.WrapperHandler(controllers.ChapterDetail))
+		chapter.POST("", context.WrapperHandler(controllers.ChapterCreate))
+		chapter.PUT("/:id", context.WrapperHandler(controllers.ChapterUpdate))
+		chapter.DELETE("/:id", context.WrapperHandler(controllers.ChapterDelete))
 	}
 }

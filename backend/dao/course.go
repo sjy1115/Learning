@@ -16,6 +16,31 @@ func CourseGetById(ctx context.Context, id int) (course models.Course, err error
 	return
 }
 
+func CourseUpdateById(ctx context.Context, id int, data interface{}) error {
+	return mysql.GetRds(ctx).
+		Model(&models.Course{}).
+		Where("id = ?", id).
+		UpdateColumns(data).
+		Error
+}
+
+func TeacherGetById(ctx context.Context, id int) (teacher models.User, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&teacher).
+		Where("id = ? AND role = ?", id, consts.RoleTeacher).
+		First(&teacher).
+		Error
+	return
+}
+
+func CourseDeleteById(ctx context.Context, id int) error {
+	return mysql.GetRds(ctx).
+		Model(&models.Course{}).
+		Where("id = ?", id).
+		Delete(&models.Course{}).
+		Error
+}
+
 func TeacherGetByCourseId(ctx context.Context, courseId int) (user models.User, err error) {
 	err = mysql.GetRds(ctx).
 		Model(&user).

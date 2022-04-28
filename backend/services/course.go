@@ -14,6 +14,7 @@ import (
 	"learning/proto"
 	"learning/utils"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -21,7 +22,7 @@ import (
 
 func CourseListHandler(c *context.Context, req *proto.CourseListRequest) (resp *proto.CourseListResponse, err error) {
 
-	if c.UserToken.Role != consts.ROLE_STUDENT {
+	if c.UserToken.Role != consts.RoleTeacher {
 		return nil, fmt.Errorf("permission denied")
 	}
 
@@ -77,12 +78,66 @@ func CourseListHandler(c *context.Context, req *proto.CourseListRequest) (resp *
 }
 
 func CourseDetailHandler(c *context.Context, req *proto.CourseDetailRequest) (resp *proto.CourseDetailResponse, err error) {
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+	course, err := dao.CourseGetById(c.Ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	teacher, err := dao.TeacherGetByCourseId(c.Ctx, course.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp = &proto.CourseDetailResponse{
+		ID:           course.Id,
+		Name:         course.Name,
+		Semester:     course.Semester,
+		Teacher:      teacher.Name,
+		Avatar:       course.Avatar,
+		Introduction: course.Introduction,
+		//StudentNum: course.StudentNum,
+		CreateTm: course.InsertTm.Unix(),
+	}
+
+	return
+}
+
+func CourseUpdateHandler(c *context.Context, req *proto.CourseUpdateRequest) (resp *proto.CourseUpdateResponse, err error) {
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+
+	course, err := dao.CourseGetById(c.Ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	data := make(map[string]interface{})
+	if len(req.Name) != 0 {
+		data["name"] = req.Name
+	}
+	if len(req.Semester) != 0 {
+		data["semester"] = req.Semester
+	}
+	if len(req.Introduction) != 0 {
+		data["introduction"] = req.Introduction
+	}
+
+	err = dao.CourseUpdateById(c.Ctx, id, data)
+	if err != nil {
+		return nil, err
+	}
+
+	resp = &proto.CourseUpdateResponse{
+		Id: course.Id,
+	}
 
 	return
 }
 
 func CourseCreateHandler(c *context.Context, req *proto.CourseCreateRequest) (resp *proto.CourseCreateResponse, err error) {
-	if c.UserToken.Role != consts.ROLE_TEACHER {
+	if c.UserToken.Role != consts.RoleTeacher {
 		return nil, fmt.Errorf("permission denied")
 	}
 
@@ -92,48 +147,32 @@ func CourseCreateHandler(c *context.Context, req *proto.CourseCreateRequest) (re
 		Name:         req.Name,
 		Semester:     req.Semester,
 		Introduction: req.Introduction,
+		Avatar:       req.Avatar,
 		InsertTm:     time.Now(),
 		UpdateTm:     time.Now(),
 	}
 
-	tx := mysql.GetRds(c.Ctx).Begin()
-
-	err = dao.Create(tx, course)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	fh, err := c.FormFile("avatar")
+	err = dao.Create(c.Ctx, course)
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fh.Open()
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	filePath := fmt.Sprintf("%s/%d/%s", consts.AvatarPrefix, course.Id, fh.Filename)
-
-	err = oss.Bucket.PutReader(filePath, file, fh.Size)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	err = dao.UpdateColumn(tx, course.Id, map[string]interface{}{
-		"avatar":    filePath,
-		"update_tm": time.Now(),
-	})
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	tx.Commit()
 	resp.Id = course.Id
+
+	return
+}
+
+func CourseDeleteHandler(c *context.Context, req *proto.CourseDeleteRequest) (resp *proto.CourseDeleteResponse, err error) {
+	if c.UserToken.Role != consts.RoleTeacher {
+		return nil, fmt.Errorf("permission denied")
+	}
+
+	resp = &proto.CourseDeleteResponse{}
+
+	err = dao.CourseDeleteById(c.Ctx, req.ID)
+	if err != nil {
+		return nil, err
+	}
 
 	return
 }

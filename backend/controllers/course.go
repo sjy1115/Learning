@@ -25,6 +25,42 @@ func CourseList(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func CourseDetail(c *context.Context) {
+	var req proto.CourseDetailRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.CourseDetailHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func CourseUpdate(c *context.Context) {
+	var req proto.CourseUpdateRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.CourseUpdateHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func CourseCreate(c *context.Context) {
 	var req proto.CourseCreateRequest
 
@@ -35,6 +71,114 @@ func CourseCreate(c *context.Context) {
 	}
 
 	resp, err := services.CourseCreateHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func CourseDelete(c *context.Context) {
+	var req proto.CourseDeleteRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.CourseDeleteHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func ChapterList(c *context.Context) {
+	var req proto.ChapterListRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ChapterListHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func ChapterDetail(c *context.Context) {
+	var req proto.ChapterDetailRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ChapterDetailHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func ChapterUpdate(c *context.Context) {
+	var req proto.ChapterUpdateRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ChapterUpdateHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func ChapterCreate(c *context.Context) {
+	var req proto.ChapterCreateRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ChapterCreateHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func ChapterDelete(c *context.Context) {
+	var req proto.ChapterDeleteRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ChapterDeleteHandler(c, &req)
 	if err != nil {
 		utils.Error(c, utils.ErrorCode, err)
 		return

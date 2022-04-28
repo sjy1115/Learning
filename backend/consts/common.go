@@ -4,16 +4,18 @@ const (
 	CoursePrefix = "course/"
 	AvatarPrefix = CoursePrefix + "avatar/"
 	PdfPrefix    = CoursePrefix + "pdf/"
+	VideoPrefix  = CoursePrefix + "video/"
+)
+
+const (
+	FileTypeAvatar = "avatar"
+	FileTypePdf    = "pdf"
+	FileTypeVideo  = "video"
 )
 
 const (
 	AuthHeader = "Authorization"
 	AuthToken  = "jwt-token"
-)
-
-const (
-	ROLE_STUDENT = 1
-	ROLE_TEACHER = 2
 )
 
 const (

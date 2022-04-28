@@ -27,7 +27,7 @@ func (c *Config) Load() {
 	c.Addr = "127.0.0.1"
 	c.DockerAddr = "redis"
 	c.Port = 6379
-	c.Password = "admin"
+	c.Password = "123456"
 	c.DB = 0
 }
 

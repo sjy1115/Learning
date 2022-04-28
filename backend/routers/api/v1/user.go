@@ -10,6 +10,7 @@ func RegisterStudentsRouter(group gin.IRouter) {
 	user := group.Group("/user")
 	{
 		user.POST("/login", context.WrapperHandler(controllers.UserLogin))
+		user.GET("/info", context.WrapperHandler(controllers.UserInfo))
 		user.GET("/logout", context.WrapperHandler(controllers.UserLogout))
 		user.POST("/register", context.WrapperHandler(controllers.UserRegister))
 		user.GET("/verifycode", context.WrapperHandler(controllers.VerifyCode))

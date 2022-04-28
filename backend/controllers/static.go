@@ -8,7 +8,7 @@ import (
 )
 
 func StaticDownload(c *context.Context) {
-	var req proto.DownloadReq
+	var req proto.DownloadRequest
 	err := c.Bind(&req)
 	if err != nil {
 		utils.Error(c, utils.ErrorCode, err)
@@ -16,6 +16,16 @@ func StaticDownload(c *context.Context) {
 	}
 
 	resp, err := services.StaticDownloadHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func StaticUpload(c *context.Context) {
+	resp, err := services.StaticUploadHandler(c)
 	if err != nil {
 		utils.Error(c, utils.ErrorCode, err)
 		return
