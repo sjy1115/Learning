@@ -93,3 +93,5 @@ bin/ms_thread.tar
 bin
 
 backend/build.sh
+
+*.tar

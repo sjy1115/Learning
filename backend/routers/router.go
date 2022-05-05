@@ -15,5 +15,6 @@ func InitRouter(router gin.IRouter) {
 		v1.RegisterStudentsRouter(api)
 		v1.RegisterStaticRouter(api)
 		v1.RegisterCourseRouter(api)
+		v1.RegisterExerciseRouter(api)
 	}
 }

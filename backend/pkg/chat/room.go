@@ -6,23 +6,10 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"learning/dao"
+	"learning/models"
 	"sync"
 	"time"
 )
-
-var RoomInstance *Room
-
-func init() {
-	RoomInstance = &Room{
-		Clients: make([]*ClientId, 0),
-
-		OnlineChan:  make(chan *Client, 10),
-		OfflineChan: make(chan *Client, 10),
-		MessageChan: make(chan *Message, 10),
-	}
-
-	go RoomInstance.Broadcast(context.TODO())
-}
 
 type Room struct {
 	CourseId int
@@ -49,6 +36,9 @@ func NewChatRoom(courseId int) *Room {
 }
 
 func (r *Room) OnlineNum() int {
+	r.mux.Lock()
+	defer r.mux.Unlock()
+
 	return r.onlineNum
 }
 
@@ -90,8 +80,12 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
 			}
 		}
 		r.onlineNum--
+
 		r.mux.Unlock()
 
+		if r.OnlineNum() == 0 {
+			Pool.Put(r)
+		}
 		conn.Close()
 	}()
 
@@ -107,6 +101,7 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
 		r.MessageChan <- &Message{
 			Type:     MsgCommon,
 			Msg:      string(data),
+			Sender:   id,
 			Name:     client.User.Name,
 			SendTime: time.Now().Unix(),
 		}
@@ -167,6 +162,7 @@ func (r *Room) SendMessage(msg *Message) {
 	case MsgRobot:
 
 	case MsgCommon:
+		var msgs []*models.ChatHistory
 		for _, clientId := range r.Clients {
 			err := clientId.Client.Conn.WriteJSON(msg)
 			if err != nil {
@@ -174,6 +170,21 @@ func (r *Room) SendMessage(msg *Message) {
 					"err": err.Error(),
 				}).Error("write message failed")
 			}
+			msgs = append(msgs, &models.ChatHistory{
+				RoomId:   clientId.Id,
+				CourseId: r.CourseId,
+				From:     0,
+				To:       clientId.Client.User.Id,
+				SentTm:   time.Unix(msg.SendTime, 0),
+				InsertTm: time.Now(),
+			})
+		}
+		err := dao.Create(context.TODO(), &msgs)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"msg": msg,
+				"err": err.Error(),
+			})
 		}
 	}
 }

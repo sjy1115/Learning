@@ -10,6 +10,7 @@ import (
 	"learning/pkg/context"
 	"learning/pkg/jwt"
 	"learning/proto"
+	"strconv"
 )
 
 func UserLoginHandler(c *context.Context, req *proto.LoginRequest) (resp *proto.LoginResponse, err error) {
@@ -60,8 +61,37 @@ func UserInfoHandler(c *context.Context) (resp *proto.UserInfoResponse, err erro
 	}, nil
 }
 
+func UserUpdateHandler(c *context.Context, req *proto.UserUpdateRequest) (resp *proto.UserUpdateResponse, err error) {
+	userIdStr := c.Param("id")
+	userId, _ := strconv.Atoi(userIdStr)
+
+	user, err := dao.GetUserById(c.Ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	data := make(map[string]interface{})
+	if len(req.Avatar) != 0 {
+		data["avatar"] = req.Avatar
+	}
+
+	if len(req.Name) != 0 {
+		data["name"] = req.Name
+	}
+
+	err = dao.UserUpdateById(c.Ctx, user.Id, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
 func UserLogoutHandler(c *context.Context) (resp *proto.LogoutResponse, err error) {
-	// TODO: 清除缓存
+	err = cache.Del(c.Ctx, cache.UserTokenKey(c.UserToken.UserId))
+	if err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 

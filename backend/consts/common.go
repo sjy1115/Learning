@@ -22,3 +22,9 @@ const (
 	RoleStudent = iota
 	RoleTeacher
 )
+
+const (
+	ExerciseTypeMultipleChoice = "multiple_choice"
+	ExerciseTypeJudge          = "judge"
+	ExerciseTypeFillsUp        = "fills_up"
+)

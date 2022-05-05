@@ -34,6 +34,15 @@ func GetUserById(ctx context.Context, id int) (result models.User, err error) {
 	return
 }
 
+func UserUpdateById(ctx context.Context, id int, data map[string]interface{}) (err error) {
+	err = mysql.GetRds(ctx).
+		Model(&models.User{}).
+		Where("id = ?", id).
+		UpdateColumns(data).
+		Error
+	return
+}
+
 func UserExistsByName(ctx context.Context, name string) (exists bool, err error) {
 	var user []models.User
 	err = mysql.GetRds(ctx).

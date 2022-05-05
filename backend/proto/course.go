@@ -71,5 +71,5 @@ type UploadCourseRequest struct {
 
 type StartChatRequest struct {
 	Token    string `json:"token" form:"token"`
-	CourseId string `json:"courseId" form:"courseId"`
+	CourseId int    `json:"courseId" form:"courseId"`
 }

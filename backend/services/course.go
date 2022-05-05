@@ -1,8 +1,11 @@
 package services
 
 import (
-	lcontext "context"
 	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
 	"learning/consts"
 	"learning/dao"
 	"learning/db/mysql"
@@ -13,22 +16,19 @@ import (
 	"learning/pkg/oss"
 	"learning/proto"
 	"learning/utils"
-	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 func CourseListHandler(c *context.Context, req *proto.CourseListRequest) (resp *proto.CourseListResponse, err error) {
 
-	if c.UserToken.Role != consts.RoleTeacher {
-		return nil, fmt.Errorf("permission denied")
-	}
-
 	resp = &proto.CourseListResponse{}
 
-	db := mysql.GetRds(c.Ctx).Model(&models.Course{})
+	isTeacher := c.UserToken.Role == consts.RoleTeacher
+
+	db := mysql.GetRds(c.Ctx).
+		Model(&models.Course{}).
+		Joins("LEFT JOIN course_user cu ON cu.course_id = course.id AND cu.user_id = ?", c.UserToken.UserId)
 
 	if len(req.Name) != 0 {
 		db = db.Where("name = ?", req.Name)
@@ -50,25 +50,26 @@ func CourseListHandler(c *context.Context, req *proto.CourseListRequest) (resp *
 	}
 
 	for _, course := range courses {
-		teacher, err := dao.TeacherGetByCourseId(c.Ctx, course.Id)
-		if err != nil {
-			return nil, err
-		}
-
-		studentNum, err := dao.StudentNumGetByCourseId(c.Ctx, course.Id)
-		if err != nil {
-			return nil, err
-		}
-
-		// TODO invite code
-
 		item := &proto.CourseListResponseItem{
 			ID:         course.Id,
 			Name:       course.Name,
 			Semester:   course.Semester,
-			Teacher:    teacher.Name,
-			StudentNum: studentNum,
+			InviteCode: course.InviteCode,
 			CreateTm:   course.InsertTm.Unix(),
+		}
+
+		if isTeacher {
+			teacher, err := dao.TeacherGetByCourseId(c.Ctx, course.Id)
+			if err != nil {
+				return nil, err
+			}
+			item.Teacher = teacher.Name
+
+			studentNum, err := dao.StudentNumGetByCourseId(c.Ctx, course.Id)
+			if err != nil {
+				return nil, err
+			}
+			item.StudentNum = studentNum
 		}
 
 		resp.Items = append(resp.Items, item)
@@ -148,6 +149,7 @@ func CourseCreateHandler(c *context.Context, req *proto.CourseCreateRequest) (re
 		Semester:     req.Semester,
 		Introduction: req.Introduction,
 		Avatar:       req.Avatar,
+		InviteCode:   utils.RandomString(32),
 		InsertTm:     time.Now(),
 		UpdateTm:     time.Now(),
 	}
@@ -220,7 +222,7 @@ func StartChatHandler(c *context.Context, req *proto.StartChatRequest) error {
 		return err
 	}
 
-	go chat.RoomInstance.Process(lcontext.TODO(), conn, userToken.UserId)
+	go chat.Process(c.Ctx, req.CourseId, userToken.UserId, conn)
 
 	return nil
 }

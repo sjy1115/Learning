@@ -25,6 +25,24 @@ func UserLogin(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func UserUpdate(c *context.Context) {
+	var req proto.UserUpdateRequest
+
+	err := c.Bind(req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.UserUpdateHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func UserInfo(c *context.Context) {
 	resp, err := services.UserInfoHandler(c)
 	if err != nil {

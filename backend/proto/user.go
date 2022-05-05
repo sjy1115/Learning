@@ -13,6 +13,14 @@ type LoginResponse struct {
 	Token  string `json:"token"`
 }
 
+type UserUpdateRequest struct {
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+}
+
+type UserUpdateResponse struct {
+}
+
 type LogoutResponse struct {
 }
 
