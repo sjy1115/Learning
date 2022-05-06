@@ -73,3 +73,9 @@ type StartChatRequest struct {
 	Token    string `json:"token" form:"token"`
 	CourseId int    `json:"courseId" form:"courseId"`
 }
+
+type JoinCourseRequest struct {
+	InviteCode string `json:"invite_code" form:"invite_code"`
+}
+
+type JoinCourseResponse struct{}

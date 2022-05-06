@@ -14,6 +14,7 @@ func RegisterCourseRouter(router gin.IRouter) {
 		course.POST("", context.WrapperHandler(controllers.CourseCreate))
 		course.PUT("/:id", context.WrapperHandler(controllers.CourseUpdate))
 		course.DELETE("/:id", context.WrapperHandler(controllers.CourseDelete))
+		course.POST("/join", context.WrapperHandler(controllers.JoinCourse))
 		course.POST("/upload", context.WrapperHandler(controllers.UploadCourse))
 		course.GET("/chat", context.WrapperHandler(controllers.StartChat))
 	}

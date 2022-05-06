@@ -11,6 +11,7 @@ import (
 	"learning/pkg/jwt"
 	"learning/proto"
 	"strconv"
+	"time"
 )
 
 func UserLoginHandler(c *context.Context, req *proto.LoginRequest) (resp *proto.LoginResponse, err error) {
@@ -47,7 +48,7 @@ func UserLoginHandler(c *context.Context, req *proto.LoginRequest) (resp *proto.
 }
 
 func UserInfoHandler(c *context.Context) (resp *proto.UserInfoResponse, err error) {
-	user, err := dao.GetUserById(c.Ctx, c.UserToken.UserId)
+	user, err := dao.UserGetById(c.Ctx, c.UserToken.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +66,7 @@ func UserUpdateHandler(c *context.Context, req *proto.UserUpdateRequest) (resp *
 	userIdStr := c.Param("id")
 	userId, _ := strconv.Atoi(userIdStr)
 
-	user, err := dao.GetUserById(c.Ctx, userId)
+	user, err := dao.UserGetById(c.Ctx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -133,6 +134,33 @@ func UserRegisterHandler(c *context.Context, req *proto.RegisterRequest) (resp *
 	}
 
 	return nil, nil
+}
+
+func ChangePasswordHandler(c *context.Context, req *proto.ChangePasswordRequest) (resp *proto.ChangePasswordResponse, err error) {
+	user, err := dao.UserGetById(c.Ctx, c.UserToken.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword))
+	if err != nil {
+		return nil, err
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	err = dao.UserUpdateById(c.Ctx, user.Id, map[string]interface{}{
+		"password":  string(hashedPassword),
+		"update_tm": time.Now(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return
 }
 
 func VerifyCodeHandler(c *context.Context) (resp *proto.VerifyCodeResponse, err error) {

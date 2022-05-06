@@ -97,6 +97,24 @@ func CourseDelete(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func JoinCourse(c *context.Context) {
+	var req proto.JoinCourseRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.JoinCourseHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func ChapterList(c *context.Context) {
 	var req proto.ChapterListRequest
 

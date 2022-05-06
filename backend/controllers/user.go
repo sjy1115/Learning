@@ -81,6 +81,24 @@ func UserRegister(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func ChangePassword(c *context.Context) {
+	var req proto.ChangePasswordRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ChangePasswordHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func VerifyCode(c *context.Context) {
 	resp, err := services.VerifyCodeHandler(c)
 	if err != nil {

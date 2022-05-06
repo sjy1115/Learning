@@ -43,7 +43,7 @@ func (r *Room) OnlineNum() int {
 }
 
 func (r *Room) Process(ctx context.Context, conn *websocket.Conn, id int) {
-	user, err := dao.GetUserById(ctx, id)
+	user, err := dao.UserGetById(ctx, id)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"id":  id,

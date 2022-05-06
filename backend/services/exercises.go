@@ -17,6 +17,8 @@ func ExercisesListHandler(c *context.Context, req *proto.ExercisesListRequest) (
 		Items: make([]*proto.ExercisesListItem, 0),
 	}
 
+	isTeacher := c.UserToken.Role == consts.RoleTeacher
+
 	exercises, err := dao.ExercisesGetById(c.Ctx, req.ChapterId)
 	if err != nil {
 		return nil, err
@@ -40,6 +42,10 @@ func ExercisesListHandler(c *context.Context, req *proto.ExercisesListRequest) (
 				return nil, err
 			}
 			item.Options = options
+		}
+
+		if isTeacher {
+			item.Answer = exerciseItem.Answer
 		}
 
 		resp.Items = append(resp.Items, item)
@@ -101,6 +107,25 @@ func ExercisesCreateHandler(c *context.Context, req *proto.ExercisesCreateReques
 
 	return
 }
+
+//func ExerciseDetailHandler(c *context.Context, req *proto.ExerciseDetailRequest) (resp *proto.ExerciseDetailResponse, err error) {
+//	if c.UserToken.Role != consts.RoleTeacher {
+//		return nil, fmt.Errorf("permission denied")
+//	}
+//
+//	idStr := c.Param("id")
+//	id, err := strconv.Atoi(idStr)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	exercise, err := dao.ExercisesGetById(c.Ctx, id)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return
+//}
 
 func ExercisesCheckHandler(c *context.Context, req *proto.ExercisesCheckRequest) (resp *proto.ExercisesCheckResponse, err error) {
 	resp = &proto.ExercisesCheckResponse{}

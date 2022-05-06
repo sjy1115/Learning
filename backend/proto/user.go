@@ -51,6 +51,14 @@ type RegisterResponse struct {
 	Password string `json:"password" form:"password"`
 }
 
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password" form:"old_password"`
+	NewPassword string `json:"new_password" form:"new_password"`
+}
+
+type ChangePasswordResponse struct {
+}
+
 type VerifyCodeResponse struct {
 	CaptId string `json:"capt_id" form:"capt_id"`
 	Image  string `json:"image" form:"image"`

@@ -24,6 +24,11 @@ const (
 )
 
 const (
+	OK     = 1
+	DELETE = 2
+)
+
+const (
 	ExerciseTypeMultipleChoice = "multiple_choice"
 	ExerciseTypeJudge          = "judge"
 	ExerciseTypeFillsUp        = "fills_up"

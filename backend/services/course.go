@@ -142,6 +142,8 @@ func CourseCreateHandler(c *context.Context, req *proto.CourseCreateRequest) (re
 		return nil, fmt.Errorf("permission denied")
 	}
 
+	tx := mysql.GetRds(c.Ctx).Begin()
+
 	resp = &proto.CourseCreateResponse{}
 
 	course := &models.Course{
@@ -154,11 +156,27 @@ func CourseCreateHandler(c *context.Context, req *proto.CourseCreateRequest) (re
 		UpdateTm:     time.Now(),
 	}
 
-	err = dao.Create(c.Ctx, course)
+	err = dao.Create(c.Ctx, course, tx)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
+	courseUser := models.CourseUser{
+		CourseID: course.Id,
+		UserID:   c.UserToken.UserId,
+		Status:   consts.OK,
+		InsertTm: time.Now(),
+		UpdateTm: time.Now(),
+	}
+
+	err = dao.Create(c.Ctx, &courseUser, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
 	resp.Id = course.Id
 
 	return
@@ -172,6 +190,39 @@ func CourseDeleteHandler(c *context.Context, req *proto.CourseDeleteRequest) (re
 	resp = &proto.CourseDeleteResponse{}
 
 	err = dao.CourseDeleteById(c.Ctx, req.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func JoinCourseHandler(c *context.Context, req *proto.JoinCourseRequest) (resp *proto.JoinCourseResponse, err error) {
+	if c.UserToken.Role != consts.RoleStudent {
+		return nil, fmt.Errorf("permission denied")
+	}
+
+	resp = &proto.JoinCourseResponse{}
+
+	course, err := dao.CourseGetByInviteCode(c, req.InviteCode)
+	if err != nil {
+		return nil, err
+	}
+
+	student, err := dao.UserGetById(c.Ctx, c.UserToken.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	userCourse := models.CourseUser{
+		CourseID: course.Id,
+		UserID:   student.Id,
+		Status:   consts.OK,
+		InsertTm: time.Now(),
+		UpdateTm: time.Now(),
+	}
+
+	err = dao.Create(c.Ctx, &userCourse)
 	if err != nil {
 		return nil, err
 	}

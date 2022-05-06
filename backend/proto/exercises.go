@@ -15,6 +15,7 @@ type ExercisesListItem struct {
 	Id      int      `json:"id"`
 	Title   string   `json:"title"`
 	Type    string   `json:"type"`
+	Answer  string   `json:"answer"`
 	Options []string `json:"options"`
 }
 
@@ -34,6 +35,15 @@ type ExercisesItem struct {
 
 type ExercisesCreateResponse struct {
 	Id int64 `json:"id"`
+}
+
+type ExerciseDetailRequest struct{}
+
+type ExerciseDetailResponse struct {
+	Id      int      `json:"id"`
+	Title   string   `json:"title"`
+	Type    string   `json:"type"`
+	Options []string `json:"options"`
 }
 
 type ExercisesCheckRequest struct {

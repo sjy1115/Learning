@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/sirupsen/logrus"
 	"learning/pkg/context"
 	"learning/proto"
 	"net/http"
@@ -11,6 +12,11 @@ const (
 )
 
 func Error(c *context.Context, code int, err error) {
+	logrus.WithFields(logrus.Fields{
+		"code": code,
+		"err":  err,
+		"msg":  err.Error(),
+	})
 	c.JSON(http.StatusOK, proto.BaseResp{
 		Code:    code,
 		Message: err.Error(),

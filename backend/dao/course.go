@@ -16,6 +16,15 @@ func CourseGetById(ctx context.Context, id int) (course models.Course, err error
 	return
 }
 
+func CourseGetByInviteCode(ctx context.Context, inviteCode string) (course models.Course, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&course).
+		Where("invite_code = ?", inviteCode).
+		First(&course).
+		Error
+	return
+}
+
 func CourseUpdateById(ctx context.Context, id int, data interface{}) error {
 	return mysql.GetRds(ctx).
 		Model(&models.Course{}).

@@ -29,7 +29,7 @@ func GetPageUser(ctx context.Context, page, pageSize int) (results []models.User
 	return
 }
 
-func GetUserById(ctx context.Context, id int) (result models.User, err error) {
+func UserGetById(ctx context.Context, id int) (result models.User, err error) {
 	err = GetById(ctx, id, &result)
 	return
 }
