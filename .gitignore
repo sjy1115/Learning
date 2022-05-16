@@ -3,6 +3,13 @@
 # Created by https://www.gitignore.io/api/visualstudiocode,macos,go
 # Edit at https://www.gitignore.io/?templates=visualstudiocode,macos,go
 
+### frontend ###
+frontend/dist
+frontend/node_modules
+frontend/src/.umi
+frontend/src/.umi-production
+
+
 ### Go ###
 # Binaries for programs and plugins
 *.exe
