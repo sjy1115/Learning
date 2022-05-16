@@ -14,7 +14,8 @@ func RegisterStudentsRouter(group gin.IRouter) {
 		user.PUT("/:id", context.WrapperHandler(controllers.UserUpdate))
 		user.GET("/logout", context.WrapperHandler(controllers.UserLogout))
 		user.POST("/register", context.WrapperHandler(controllers.UserRegister))
-		user.POST("/changepassword", context.WrapperHandler(controllers.ChangePassword))
+		user.POST("/change-password", context.WrapperHandler(controllers.ChangePassword))
+		user.POST("/upload-avatar", context.WrapperHandler(controllers.UserAvatar))
 		user.GET("/verifycode", context.WrapperHandler(controllers.VerifyCode))
 	}
 }

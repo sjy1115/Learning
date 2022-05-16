@@ -25,8 +25,13 @@ type Message struct {
 	Msg       string      `json:"msg,omitempty"`
 	Name      string      `json:"name,omitempty"`
 	Sender    int         `json:"sender,omitempty"`
+	Avatar    string      `json:"avatar,omitempty"`
 	OnlineNum int         `json:"online_num,omitempty"`
 	SendTime  int64       `json:"send_time,omitempty"`
+}
+
+type SendMessage struct {
+	Msg string `json:"msg" form:"msg"`
 }
 
 type ClientId struct {

@@ -1,7 +1,7 @@
 package proto
 
 type ChapterListRequest struct {
-	CourseId int    `json:"course_id" form:"course_id"`
+	CourseId int    `json:"id" form:"id"` // 课程id
 	Name     string `json:"name" form:"name"`
 	Page     int    `json:"page" form:"page"`
 	PageSize int    `json:"page_size" form:"page_size"`
@@ -48,12 +48,18 @@ type ChapterDetailResponse struct {
 }
 
 type ChapterCreateRequest struct {
-	CourseId     int    `json:"course_id" form:"course_id"`
+	CourseId     int    `json:"id" form:"id"`
 	Name         string `json:"name" form:"name"`
 	Introduction string `json:"introduction" form:"introduction"`
 	Pdf          string `json:"pdf" form:"pdf"`
 	Video        string `json:"video" form:"video"`
 }
+
+type ChapterLearnRequest struct {
+	ChapterId int `json:"chapter_id" form:"chapter_id"`
+}
+
+type ChapterLearnResponse struct{}
 
 type ChapterCreateResponse struct {
 	Id int `json:"id"`

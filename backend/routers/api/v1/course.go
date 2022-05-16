@@ -23,6 +23,7 @@ func RegisterCourseRouter(router gin.IRouter) {
 		chapter.GET("", context.WrapperHandler(controllers.ChapterList))
 		chapter.GET("/:id", context.WrapperHandler(controllers.ChapterDetail))
 		chapter.POST("", context.WrapperHandler(controllers.ChapterCreate))
+		chapter.POST("/learn", context.WrapperHandler(controllers.ChapterLearn))
 		chapter.PUT("/:id", context.WrapperHandler(controllers.ChapterUpdate))
 		chapter.DELETE("/:id", context.WrapperHandler(controllers.ChapterDelete))
 	}

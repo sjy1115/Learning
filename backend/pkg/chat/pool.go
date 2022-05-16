@@ -3,7 +3,9 @@ package chat
 import (
 	"context"
 	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 	"sync"
+	"time"
 )
 
 var (
@@ -17,12 +19,23 @@ func init() {
 			return &Room{
 				Clients: make([]*ClientId, 0),
 
-				OnlineChan:  make(chan *Client, 0),
-				OfflineChan: make(chan *Client, 0),
-				MessageChan: make(chan *Message, 0),
+				OnlineChan:  make(chan *Client, 10),
+				OfflineChan: make(chan *Client, 10),
+				MessageChan: make(chan *Message, 10),
 			}
 		},
 	}
+
+	go func() {
+		for {
+			select {
+			case <-time.After(time.Second * 60 * 5):
+				logrus.WithFields(logrus.Fields{
+					"rooms": Rooms,
+				}).Info("chat rooms")
+			}
+		}
+	}()
 }
 
 func Process(ctx context.Context, courseId int, userId int, conn *websocket.Conn) {
@@ -32,7 +45,16 @@ func Process(ctx context.Context, courseId int, userId int, conn *websocket.Conn
 		room.CourseId = courseId
 		Rooms[courseId] = room
 
-		go room.Broadcast(context.TODO())
+		logrus.WithFields(logrus.Fields{
+			"courseId": courseId,
+		}).Info("New room created")
+
+		go room.Broadcast()
 	}
 	room.Process(ctx, conn, userId)
+}
+
+func release(room *Room) {
+	Pool.Put(room)
+	delete(Rooms, room.CourseId)
 }

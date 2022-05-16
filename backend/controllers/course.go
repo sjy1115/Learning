@@ -187,6 +187,24 @@ func ChapterCreate(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func ChapterLearn(c *context.Context) {
+	var req proto.ChapterLearnRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ChapterLearnHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func ChapterDelete(c *context.Context) {
 	var req proto.ChapterDeleteRequest
 

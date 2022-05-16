@@ -55,6 +55,7 @@ func TeacherGetByCourseId(ctx context.Context, courseId int) (user models.User, 
 		Model(&user).
 		Joins("LEFT JOIN course_user u ON user.id = u.user_id AND user.role = ?", consts.RoleTeacher).
 		Where("u.course_id = ?", courseId).
+		First(&user).
 		Error
 	return
 }
@@ -62,9 +63,20 @@ func TeacherGetByCourseId(ctx context.Context, courseId int) (user models.User, 
 func StudentNumGetByCourseId(ctx context.Context, courseId int) (num int64, err error) {
 	err = mysql.GetRds(ctx).
 		Model(&models.CourseUser{}).
-		Joins("LEFT JOIN user u ON u.id = course_user.user_id AND u.role = ?", consts.RoleStudent).
+		Joins("JOIN user u ON u.id = course_user.user_id AND u.role = ?", consts.RoleStudent).
 		Where("course_user.course_id = ?", courseId).
 		Count(&num).
 		Error
+	return
+}
+
+func StudentLearnNumBetByChapterId(ctx context.Context, chapterId int) (num int64, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&models.ChapterUser{}).
+		Joins("JOIN user u ON u.id = chapter_user.user_id AND u.role = ?", consts.RoleStudent).
+		Where("chapter_user.chapter_id = ?", chapterId).
+		Count(&num).
+		Error
+
 	return
 }

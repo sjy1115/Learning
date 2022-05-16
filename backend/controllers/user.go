@@ -99,6 +99,24 @@ func ChangePassword(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func UserAvatar(c *context.Context) {
+	var req proto.UserAvatarRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.UserAvatarHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func VerifyCode(c *context.Context) {
 	resp, err := services.VerifyCodeHandler(c)
 	if err != nil {

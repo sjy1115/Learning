@@ -8,6 +8,7 @@ type ChatHistory struct {
 	RoomId   int       `json:"room_id" gorm:"column:room_id"`
 	From     int       `json:"from" gorm:"column:from"`
 	To       int       `json:"to" gorm:"column:to"`
+	Status   string    `json:"status" gorm:"column:status"`
 	Text     string    `json:"text" gorm:"column:text"`
 	SentTm   time.Time `json:"sent_tm" gorm:"column:sent_tm"`
 	InsertTm time.Time `json:"insert_tm" gorm:"column:insert_tm"`

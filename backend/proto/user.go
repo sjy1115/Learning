@@ -59,6 +59,13 @@ type ChangePasswordRequest struct {
 type ChangePasswordResponse struct {
 }
 
+type UserAvatarRequest struct {
+	Avatar string `json:"avatar" form:"avatar"`
+}
+
+type UserAvatarResponse struct {
+}
+
 type VerifyCodeResponse struct {
 	CaptId string `json:"capt_id" form:"capt_id"`
 	Image  string `json:"image" form:"image"`

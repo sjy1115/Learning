@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"gorm.io/gorm/logger"
 	"learning/config"
 
 	"gorm.io/driver/mysql"
@@ -16,7 +17,9 @@ var (
 func InitMysql(cfg *config.Config) error {
 	dsn := cfg.Mysql.DSN(cfg.Web.Docker)
 
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		return err
 	}

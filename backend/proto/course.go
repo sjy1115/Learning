@@ -8,13 +8,16 @@ type CourseListRequest struct {
 }
 
 type CourseListResponseItem struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	Semester   string `json:"semester"`
-	Teacher    string `json:"teacher"`
-	StudentNum int64  `json:"student_num"`
-	CreateTm   int64  `json:"create_tm"`
-	InviteCode string `json:"invite_code"`
+	ID            int    `json:"id"`
+	Name          string `json:"name,omitempty"`
+	Semester      string `json:"semester,omitempty"`
+	Teacher       string `json:"teacher,omitempty"`
+	TeacherAvatar string `json:"teacher_avatar,omitempty"`
+	StudentNum    int64  `json:"student_num,omitempty"`
+	CreateTm      int64  `json:"create_tm,omitempty"`
+	InviteCode    string `json:"invite_code,omitempty"`
+	Avatar        string `json:"avatar,omitempty"`
+	Introduction  string `json:"introduction,omitempty"`
 }
 
 type CourseUpdateRequest struct {
@@ -71,7 +74,7 @@ type UploadCourseRequest struct {
 
 type StartChatRequest struct {
 	Token    string `json:"token" form:"token"`
-	CourseId int    `json:"courseId" form:"courseId"`
+	CourseId int    `json:"course_id" form:"course_id"`
 }
 
 type JoinCourseRequest struct {

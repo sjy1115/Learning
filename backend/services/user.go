@@ -89,10 +89,10 @@ func UserUpdateHandler(c *context.Context, req *proto.UserUpdateRequest) (resp *
 }
 
 func UserLogoutHandler(c *context.Context) (resp *proto.LogoutResponse, err error) {
-	err = cache.Del(c.Ctx, cache.UserTokenKey(c.UserToken.UserId))
-	if err != nil {
-		return nil, err
-	}
+	//err = cache.Del(c.Ctx, cache.UserTokenKey(c.UserToken.UserId))
+	//if err != nil {
+	//	return nil, err
+	//}
 	return nil, nil
 }
 
@@ -159,6 +159,20 @@ func ChangePasswordHandler(c *context.Context, req *proto.ChangePasswordRequest)
 	if err != nil {
 		return nil, err
 	}
+
+	return
+}
+
+func UserAvatarHandler(c *context.Context, req *proto.UserAvatarRequest) (resp *proto.UserAvatarResponse, err error) {
+	user, err := dao.UserGetById(c.Ctx, c.UserToken.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	err = dao.UserUpdateById(c.Ctx, user.Id, map[string]interface{}{
+		"avatar":    req.Avatar,
+		"update_tm": time.Now(),
+	})
 
 	return
 }

@@ -14,9 +14,6 @@ import (
 )
 
 func ChapterListHandler(c *context.Context, req *proto.ChapterListRequest) (resp *proto.ChapterListResponse, err error) {
-	if c.UserToken.Role != consts.RoleTeacher {
-		return nil, fmt.Errorf("permission denied")
-	}
 
 	resp = &proto.ChapterListResponse{}
 
@@ -40,11 +37,22 @@ func ChapterListHandler(c *context.Context, req *proto.ChapterListRequest) (resp
 	}
 
 	for _, chapter := range chapters {
-		// TODO learned and total
+
+		learned, err := dao.StudentLearnNumBetByChapterId(c.Ctx, chapter.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		total, err := dao.StudentNumGetByCourseId(c.Ctx, chapter.CourseId)
+		if err != nil {
+			return nil, err
+		}
 
 		resp.Items = append(resp.Items, &proto.ChapterListResponseItem{
 			Id:           chapter.Id,
 			Name:         chapter.Name,
+			Learned:      learned,
+			Total:        total,
 			Introduction: chapter.Introduction,
 			PdfUrl:       chapter.PdfUrl,
 			CreateAt:     chapter.InsertTm.Unix(),
@@ -123,6 +131,26 @@ func ChapterCreateHandler(c *context.Context, req *proto.ChapterCreateRequest) (
 	}
 
 	resp.Id = chapter.Id
+
+	return
+}
+
+func ChapterLearnHandler(c *context.Context, req *proto.ChapterLearnRequest) (resp *proto.ChapterLearnResponse, err error) {
+	if c.UserToken.Role != consts.RoleStudent {
+		return nil, fmt.Errorf("permission denied")
+	}
+
+	uc := models.ChapterUser{
+		UserID:    c.UserToken.UserId,
+		ChapterID: req.ChapterId,
+		InsertTm:  time.Now(),
+		UpdateTm:  time.Now(),
+	}
+
+	err = dao.Create(c.Ctx, &uc)
+	if err != nil {
+		return nil, err
+	}
 
 	return
 }

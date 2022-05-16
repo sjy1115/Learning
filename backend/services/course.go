@@ -28,7 +28,7 @@ func CourseListHandler(c *context.Context, req *proto.CourseListRequest) (resp *
 
 	db := mysql.GetRds(c.Ctx).
 		Model(&models.Course{}).
-		Joins("LEFT JOIN course_user cu ON cu.course_id = course.id AND cu.user_id = ?", c.UserToken.UserId)
+		Joins("JOIN course_user cu ON cu.course_id = course.id AND cu.user_id = ?", c.UserToken.UserId)
 
 	if len(req.Name) != 0 {
 		db = db.Where("name = ?", req.Name)
@@ -51,25 +51,29 @@ func CourseListHandler(c *context.Context, req *proto.CourseListRequest) (resp *
 
 	for _, course := range courses {
 		item := &proto.CourseListResponseItem{
-			ID:         course.Id,
-			Name:       course.Name,
-			Semester:   course.Semester,
-			InviteCode: course.InviteCode,
-			CreateTm:   course.InsertTm.Unix(),
+			ID:       course.Id,
+			Name:     course.Name,
+			Semester: course.Semester,
+			CreateTm: course.InsertTm.Unix(),
 		}
 
-		if isTeacher {
-			teacher, err := dao.TeacherGetByCourseId(c.Ctx, course.Id)
-			if err != nil {
-				return nil, err
-			}
-			item.Teacher = teacher.Name
+		teacher, err := dao.TeacherGetByCourseId(c.Ctx, course.Id)
+		if err != nil {
+			return nil, err
+		}
+		item.Teacher = teacher.Name
+		item.TeacherAvatar = teacher.Avatar
 
+		if isTeacher {
 			studentNum, err := dao.StudentNumGetByCourseId(c.Ctx, course.Id)
 			if err != nil {
 				return nil, err
 			}
 			item.StudentNum = studentNum
+			item.InviteCode = course.InviteCode
+		} else {
+			item.Avatar = course.Avatar
+			item.Introduction = course.Introduction
 		}
 
 		resp.Items = append(resp.Items, item)
