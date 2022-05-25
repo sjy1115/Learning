@@ -7,8 +7,9 @@ type ExercisesListRequest struct {
 }
 
 type ExercisesListResponse struct {
-	Total int64                `json:"total"`
-	Items []*ExercisesListItem `json:"items"`
+	ExercisesId int64                `json:"exercises_id"`
+	Total       int64                `json:"total"`
+	Items       []*ExercisesListItem `json:"items"`
 }
 
 type ExercisesListItem struct {

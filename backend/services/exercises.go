@@ -19,15 +19,17 @@ func ExercisesListHandler(c *context.Context, req *proto.ExercisesListRequest) (
 
 	isTeacher := c.UserToken.Role == consts.RoleTeacher
 
-	exercises, err := dao.ExercisesGetById(c.Ctx, req.ChapterId)
+	exercises, err := dao.ExercisesGetByChapterId(c.Ctx, req.ChapterId)
 	if err != nil {
 		return nil, err
 	}
+	resp.ExercisesId = int64(exercises.Id)
 
 	exerciseItems, err := dao.ExerciseItemGetByExerciseId(c.Ctx, exercises.Id)
 	if err != nil {
 		return nil, err
 	}
+	resp.Total = int64(len(exerciseItems))
 
 	for _, exerciseItem := range exerciseItems {
 		item := &proto.ExercisesListItem{
@@ -61,17 +63,24 @@ func ExercisesCreateHandler(c *context.Context, req *proto.ExercisesCreateReques
 
 	resp = &proto.ExercisesCreateResponse{}
 
-	tx := mysql.GetRds(c.Ctx).Begin()
-
-	exercise := models.Exercises{
-		Title:      req.Title,
-		ChapterId:  req.ChapterId,
-		Attachment: req.Attachment,
-		InsertTm:   time.Now(),
-		UpdateTm:   time.Now(),
+	exercise, err := dao.ExercisesGetByChapterId(c.Ctx, req.ChapterId)
+	if err != nil {
+		return nil, err
 	}
 
-	err = dao.Create(c.Ctx, &exercise, tx)
+	tx := mysql.GetRds(c.Ctx).Begin()
+
+	err = dao.ExercisesUpdateById(c.Ctx, exercise.Id, map[string]interface{}{
+		"title":      req.Title,
+		"attachment": req.Attachment,
+		"update_tm":  time.Now(),
+	}, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = dao.ExercisesItemDeleteByExerciseId(c.Ctx, exercise.Id, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -81,6 +90,7 @@ func ExercisesCreateHandler(c *context.Context, req *proto.ExercisesCreateReques
 	for _, item := range req.Questions {
 		options, err := jsoniter.MarshalToString(item.Options)
 		if err != nil {
+			tx.Rollback()
 			return nil, err
 		}
 
@@ -108,27 +118,13 @@ func ExercisesCreateHandler(c *context.Context, req *proto.ExercisesCreateReques
 	return
 }
 
-//func ExerciseDetailHandler(c *context.Context, req *proto.ExerciseDetailRequest) (resp *proto.ExerciseDetailResponse, err error) {
-//	if c.UserToken.Role != consts.RoleTeacher {
-//		return nil, fmt.Errorf("permission denied")
-//	}
-//
-//	idStr := c.Param("id")
-//	id, err := strconv.Atoi(idStr)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	exercise, err := dao.ExercisesGetById(c.Ctx, id)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return
-//}
-
 func ExercisesCheckHandler(c *context.Context, req *proto.ExercisesCheckRequest) (resp *proto.ExercisesCheckResponse, err error) {
 	resp = &proto.ExercisesCheckResponse{}
+
+	exercise, err := dao.ExercisesGetById(c.Ctx, req.ExerciseId)
+	if err != nil {
+		return nil, err
+	}
 
 	exerciseItems, err := dao.ExerciseItemGetByExerciseId(c.Ctx, req.ExerciseId)
 	if err != nil {
@@ -145,6 +141,11 @@ func ExercisesCheckHandler(c *context.Context, req *proto.ExercisesCheckRequest)
 
 	if resp.Score < 0 {
 		resp.Score = 0
+	}
+
+	err = dao.UpdateStudentScoreByStudentId(c.Ctx, c.UserToken.UserId, exercise.ChapterId, int(resp.Score))
+	if err != nil {
+		return nil, err
 	}
 
 	return

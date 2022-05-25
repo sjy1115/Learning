@@ -11,10 +11,13 @@ type ChapterListResponseItem struct {
 	Id           int    `json:"id"`
 	Name         string `json:"name"`
 	Introduction string `json:"introduction"`
-	Learned      int64  `json:"learned"`
+	LearnNum     int64  `json:"learn_num"`
 	Total        int64  `json:"total"`
 	PdfUrl       string `json:"pdf_url"`
+	VideoUrl     string `json:"video_url"`
 	CreateAt     int64  `json:"create_at"`
+	Learned      bool   `json:"learned"`
+	Score        int64  `json:"score"`
 }
 
 type ChapterListResponse struct {
@@ -44,6 +47,7 @@ type ChapterDetailResponse struct {
 	Learned      int64  `json:"learned"`
 	Total        int64  `json:"total"`
 	PdfUrl       string `json:"pdf_url"`
+	VideoUrl     string `json:"video_url"`
 	CreateAt     int64  `json:"create_at"`
 }
 

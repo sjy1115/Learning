@@ -17,6 +17,8 @@ func ChapterListHandler(c *context.Context, req *proto.ChapterListRequest) (resp
 
 	resp = &proto.ChapterListResponse{}
 
+	isTeacher := c.UserToken.Role == consts.RoleTeacher
+
 	db := mysql.GetRds(c.Ctx).
 		Model(&models.Chapter{}).
 		Where("course_id = ?", req.CourseId)
@@ -38,25 +40,41 @@ func ChapterListHandler(c *context.Context, req *proto.ChapterListRequest) (resp
 
 	for _, chapter := range chapters {
 
-		learned, err := dao.StudentLearnNumBetByChapterId(c.Ctx, chapter.Id)
-		if err != nil {
-			return nil, err
-		}
-
-		total, err := dao.StudentNumGetByCourseId(c.Ctx, chapter.CourseId)
-		if err != nil {
-			return nil, err
-		}
-
-		resp.Items = append(resp.Items, &proto.ChapterListResponseItem{
+		item := proto.ChapterListResponseItem{
 			Id:           chapter.Id,
 			Name:         chapter.Name,
-			Learned:      learned,
-			Total:        total,
 			Introduction: chapter.Introduction,
 			PdfUrl:       chapter.PdfUrl,
+			VideoUrl:     chapter.VideoUrl,
 			CreateAt:     chapter.InsertTm.Unix(),
-		})
+		}
+
+		if isTeacher {
+			learnNum, err := dao.StudentLearnNumBetByChapterId(c.Ctx, chapter.Id)
+			if err != nil {
+				return nil, err
+			}
+
+			total, err := dao.StudentNumGetByCourseId(c.Ctx, chapter.CourseId)
+			if err != nil {
+				return nil, err
+			}
+
+			item.LearnNum = learnNum
+			item.Total = total
+		} else {
+			cus, err := dao.StudentIsLearnedByStudentId(c.Ctx, c.UserToken.UserId, chapter.Id)
+			if err != nil {
+				return nil, err
+			}
+
+			if len(cus) > 0 {
+				item.Learned = true
+				item.Score = int64(cus[0].Score)
+			}
+		}
+
+		resp.Items = append(resp.Items, &item)
 	}
 
 	return
@@ -78,6 +96,7 @@ func ChapterDetailHandler(c *context.Context, req *proto.ChapterDetailRequest) (
 		Name:         chapter.Name,
 		Introduction: chapter.Introduction,
 		PdfUrl:       chapter.PdfUrl,
+		VideoUrl:     chapter.VideoUrl,
 		CreateAt:     chapter.InsertTm.Unix(),
 	}
 
@@ -131,6 +150,16 @@ func ChapterCreateHandler(c *context.Context, req *proto.ChapterCreateRequest) (
 	}
 
 	resp.Id = chapter.Id
+
+	exercise := models.Exercises{
+		ChapterId: chapter.Id,
+		InsertTm:  time.Now(),
+		UpdateTm:  time.Now(),
+	}
+	err = dao.Create(c.Ctx, &exercise)
+	if err != nil {
+		return nil, err
+	}
 
 	return
 }

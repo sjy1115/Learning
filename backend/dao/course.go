@@ -5,6 +5,7 @@ import (
 	"learning/consts"
 	"learning/db/mysql"
 	"learning/models"
+	"time"
 )
 
 func CourseGetById(ctx context.Context, id int) (course models.Course, err error) {
@@ -79,4 +80,56 @@ func StudentLearnNumBetByChapterId(ctx context.Context, chapterId int) (num int6
 		Error
 
 	return
+}
+
+func StudentIsLearnedByStudentId(ctx context.Context, userId, chapterId int) (cus []models.ChapterUser, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&models.ChapterUser{}).
+		Where("user_id = ? AND chapter_id = ?", userId, chapterId).
+		Find(&cus).
+		Error
+
+	return
+}
+
+func ScoreGetByChapterIdAndUserId(ctx context.Context, userId, chapterId int) (score int, exists bool, err error) {
+	var cus []models.ChapterUser
+
+	err = mysql.GetRds(ctx).
+		Model(&models.ChapterUser{}).
+		Where("user_id = ? AND chapter_id = ?", userId, chapterId).
+		Find(&cus).
+		Error
+
+	if len(cus) > 0 {
+		score = cus[0].Score
+		exists = true
+	}
+
+	return
+}
+
+func UpdateStudentScoreByStudentId(ctx context.Context, userId, chapterId, score int) error {
+	oldScore, exists, _ := ScoreGetByChapterIdAndUserId(ctx, userId, chapterId)
+
+	if !exists {
+		return mysql.GetRds(ctx).Create(&models.ChapterUser{
+			ChapterID: chapterId,
+			UserID:    userId,
+			Score:     score,
+			InsertTm:  time.Now(),
+			UpdateTm:  time.Now(),
+		}).Error
+	} else {
+		if score > oldScore {
+			return mysql.GetRds(ctx).
+				Model(&models.ChapterUser{}).
+				Where("user_id = ? AND chapter_id = ?", userId, chapterId).
+				Updates(map[string]interface{}{
+					"score":     score,
+					"update_tm": time.Now(),
+				}).Error
+		}
+		return nil
+	}
 }

@@ -79,6 +79,9 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, userId int) {
 
 	defer func() {
 		r.OfflineChan <- client
+		logrus.WithFields(logrus.Fields{
+			"id": userId,
+		}).Infof("%s leave room", user.Name)
 
 		r.mux.Lock()
 		for i, client := range r.Clients {
@@ -92,12 +95,12 @@ func (r *Room) Process(ctx context.Context, conn *websocket.Conn, userId int) {
 		r.mux.Unlock()
 
 		if r.OnlineNum() == 0 {
+			r.stopChan <- struct{}{}
 			release(r)
 			logrus.WithFields(logrus.Fields{
 				"id": userId,
 			}).Info("chat room closed")
 		}
-		r.stopChan <- struct{}{}
 		conn.Close()
 	}()
 

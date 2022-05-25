@@ -24,7 +24,7 @@ type Config struct {
 
 func (c *Config) Load() {
 	c.Docker = true
-	c.Addr = "127.0.0.1"
+	c.Addr = "121.199.167.227"
 	c.DockerAddr = "redis"
 	c.Port = 6379
 	c.Password = "123456"
