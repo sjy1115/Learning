@@ -1,0 +1,101 @@
+.wrapper {
+  padding: 10px;
+  margin: 0 auto;
+  //   height: 600px;
+  overflow: scroll;
+  background-color: #fff;
+  width: 600px;
+  box-sizing: border-box;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+  :global {
+    .ant-input {
+      border: none;
+    }
+    .ant-input:hover {
+      box-shadow: none;
+      border: none;
+    }
+    .ant-input:focus,
+    .ant-input-focused {
+      box-shadow: none;
+      border: none;
+    }
+  }
+}
+.btn {
+  text-align: right;
+}
+.msg {
+  background-color: #fff;
+  height: 400px;
+  //   width: 600px;
+  border-bottom: 1px solid #eee;
+  overflow: scroll;
+}
+.title {
+  line-height: 20px;
+  font-size: 28px;
+  text-align: center;
+}
+.avatar {
+  border-radius: 50%;
+}
+.one_msg {
+  width: fit-content;
+  display: flex;
+  gap: 20px;
+}
+.time {
+  font-size: 10px;
+  color: #666;
+}
+.box {
+  margin-top: 5px;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  max-width: 200px;
+  font-size: 14px;
+  background: #20b2aa;
+  color: #fff;
+  text-align: left;
+  position: relative;
+  border-radius: 10px 10px 6px 10px;
+}
+.right {
+  &:extend(.box);
+  &::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border: solid 16px;
+    border-top: 20px;
+    border-color: transparent transparent transparent #20b2aa;
+    position: absolute;
+    top: 10px;
+    right: -30px;
+  }
+}
+.box::after {
+  transform: rotateZ(90deg);
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border: solid 16px;
+  border-top: 20px;
+  border-color: transparent transparent transparent #20b2aa;
+  position: absolute;
+  top: 25px;
+  left: -20px;
+}
+.my_msg {
+  gap: 20px;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  text-align: right;
+}

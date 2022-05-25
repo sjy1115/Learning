@@ -1,0 +1,29 @@
+.wrapper {
+  height: 600px;
+  overflow: scroll;
+  background-color: #fff;
+  width: 600px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+  :global {
+    .ant-input:hover {
+      box-shadow: none;
+      border: none;
+    }
+    .ant-input:focus,
+    .ant-input-focused {
+      box-shadow: none;
+      border: none;
+    }
+  }
+}
+.btn {
+  text-align: right;
+}
+.msg {
+  background-color: #fff;
+  height: 400px;
+  width: 600px;
+  border-bottom: 1px solid #eee;
+  overflow: scroll;
+}
