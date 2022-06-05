@@ -6,6 +6,7 @@ import (
 	"learning/consts"
 	"learning/db/cache"
 	"learning/pkg/jwt"
+	"net/http"
 	"strings"
 )
 
@@ -35,8 +36,8 @@ func Auth() gin.HandlerFunc {
 				"error": err.Error(),
 			}).Error("jwt auth failed")
 
-			c.JSON(401, gin.H{
-				"code": 401,
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code": http.StatusUnauthorized,
 				"msg":  err.Error(),
 			})
 			c.Abort()
@@ -49,8 +50,8 @@ func Auth() gin.HandlerFunc {
 				"user id": c.MustGet(consts.AuthToken).(*jwt.UserToken).UserId,
 			}).Error("user not exists")
 
-			c.JSON(401, gin.H{
-				"code": 401,
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code": http.StatusUnauthorized,
 				"msg":  "user not exists",
 			})
 			c.Abort()

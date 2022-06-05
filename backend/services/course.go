@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -31,7 +32,8 @@ func CourseListHandler(c *context.Context, req *proto.CourseListRequest) (resp *
 		Joins("JOIN course_user cu ON cu.course_id = course.id AND cu.user_id = ?", c.UserToken.UserId)
 
 	if len(req.Name) != 0 {
-		db = db.Where("name = ?", req.Name)
+		name := "%" + req.Name + "%"
+		db = db.Where("name LIKE ?", name)
 	}
 
 	if len(req.Semester) != 0 {
@@ -196,6 +198,64 @@ func CourseDeleteHandler(c *context.Context, req *proto.CourseDeleteRequest) (re
 	err = dao.CourseDeleteById(c.Ctx, req.ID)
 	if err != nil {
 		return nil, err
+	}
+
+	return
+}
+
+func ListChapterStudentHandler(c *context.Context, req *proto.ListChapterStudentRequest) (resp *proto.ListChapterStudentResponse, err error) {
+	if c.UserToken.Role != consts.RoleTeacher {
+		return nil, errors.New("permission denied")
+	}
+
+	resp = new(proto.ListChapterStudentResponse)
+
+	var studentScores []struct {
+		Id     int64  `json:"id" gorm:"column:id"`
+		Name   string `json:"name" gorm:"column:name"`
+		Avatar string `json:"avatar" gorm:"column:avatar"`
+	}
+
+	err = mysql.GetRds(c.Ctx).
+		Model(&models.CourseUser{}).
+		Joins("LEFT JOIN user u ON u.id = course_user.user_id AND u.role = ?", consts.RoleStudent).
+		Where("course_id = ?", req.CourseId).
+		Count(&resp.Total).
+		Offset(utils.GetStartPage(req.Page, req.PageSize)).
+		Limit(req.PageSize).
+		Select("u.id AS id, u.name AS name, u.avatar AS avatar").
+		Scan(&studentScores).
+		Error
+	if err != nil {
+		return nil, err
+	}
+
+	for _, studentScore := range studentScores {
+		var learned bool
+		score, exist, err := dao.ScoreGetByChapterIdAndUserId(c.Ctx, int(studentScore.Id), req.ChapterId)
+		if err != nil {
+			return nil, err
+		}
+		if exist {
+			learned = true
+		}
+
+		item := proto.ListCourseStudentItem{
+			Id:      studentScore.Id,
+			Name:    studentScore.Name,
+			Learned: learned,
+			Score:   int64(score),
+			Avatar:  studentScore.Avatar,
+		}
+		resp.Items = append(resp.Items, &item)
+	}
+
+	return
+}
+
+func StudentSignInHandler(ctx *context.Context, req *proto.StudentSignInRequest) (resp *proto.StudentSignInResponse, err error) {
+	if ctx.UserToken.Role != consts.RoleStudent {
+		return nil, errors.New("permission denied")
 	}
 
 	return

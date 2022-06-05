@@ -11,6 +11,6 @@ func RegisterStaticRouter(group gin.IRouter) {
 	static := group.Group("/static")
 	{
 		static.GET("/*path", context.WrapperHandler(controllers.StaticDownload))
-		static.POST("", context.WrapperHandler(controllers.StaticUpload))
+		//static.POST("", context.WrapperHandler(controllers.StaticUpload))
 	}
 }

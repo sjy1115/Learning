@@ -81,4 +81,31 @@ type JoinCourseRequest struct {
 	InviteCode string `json:"invite_code" form:"invite_code"`
 }
 
+type ListChapterStudentRequest struct {
+	CourseId  int `json:"course_id" form:"course_id"`
+	ChapterId int `json:"chapter_id" form:"chapter_id"`
+	Page      int `json:"page" form:"page"`
+	PageSize  int `json:"page_size" form:"page_size"`
+}
+
+type ListChapterStudentResponse struct {
+	Total int64                    `json:"total"`
+	Items []*ListCourseStudentItem `json:"items"`
+}
+
+type ListCourseStudentItem struct {
+	Id      int64  `json:"id"`
+	Name    string `json:"name"`
+	Score   int64  `json:"score"`
+	Learned bool   `json:"learned"`
+	Avatar  string `json:"avatar"`
+}
+
+type StudentSignInRequest struct {
+	ChapterId int    `json:"chapter_id"`
+	UUID      string `json:"uuid"`
+}
+
+type StudentSignInResponse struct{}
+
 type JoinCourseResponse struct{}

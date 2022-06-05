@@ -115,6 +115,42 @@ func JoinCourse(c *context.Context) {
 	utils.Success(c, resp)
 }
 
+func ListChapterStudent(c *context.Context) {
+	var req proto.ListChapterStudentRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.ListChapterStudentHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func StudentSignIn(c *context.Context) {
+	var req proto.StudentSignInRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.StudentSignInHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
 func ChapterList(c *context.Context) {
 	var req proto.ChapterListRequest
 
