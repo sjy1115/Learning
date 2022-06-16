@@ -82,6 +82,17 @@ func StudentLearnNumBetByChapterId(ctx context.Context, chapterId int) (num int6
 	return
 }
 
+func StudentSignInNumHandler(ctx context.Context, chapterId int) (count int64, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&models.ChapterUser{}).
+		Joins("JOIN user u ON u.id = chapter_user.user_id AND u.role = ?", consts.RoleStudent).
+		Where("chapter_user.chapter_id = ?").
+		Where("chapter_user.sign_in = ? AND chapter_user.status = ?", 1, 1).
+		Count(&count).
+		Error
+	return
+}
+
 func StudentIsLearnedByStudentId(ctx context.Context, userId, chapterId int) (cus []models.ChapterUser, err error) {
 	err = mysql.GetRds(ctx).
 		Model(&models.ChapterUser{}).

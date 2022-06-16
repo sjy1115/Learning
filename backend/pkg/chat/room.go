@@ -199,6 +199,7 @@ func (r *Room) SendMessage(msg *Message) {
 				RoomId:   clientId.Id,
 				CourseId: r.CourseId,
 				From:     0,
+				Status:   "UNREAD",
 				To:       clientId.Client.User.Id,
 				SentTm:   time.Unix(msg.SendTime, 0),
 				InsertTm: time.Now(),

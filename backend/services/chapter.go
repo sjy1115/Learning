@@ -1,9 +1,13 @@
 package services
 
 import (
+	"errors"
 	"fmt"
+	"github.com/go-redis/redis/v8"
+	"gorm.io/gorm"
 	"learning/consts"
 	"learning/dao"
+	"learning/db/cache"
 	"learning/db/mysql"
 	"learning/models"
 	"learning/pkg/context"
@@ -55,6 +59,11 @@ func ChapterListHandler(c *context.Context, req *proto.ChapterListRequest) (resp
 				return nil, err
 			}
 
+			signNum, err := dao.StudentSignInNumHandler(c.Ctx, chapter.Id)
+			if err != nil {
+				return nil, err
+			}
+
 			total, err := dao.StudentNumGetByCourseId(c.Ctx, chapter.CourseId)
 			if err != nil {
 				return nil, err
@@ -62,6 +71,7 @@ func ChapterListHandler(c *context.Context, req *proto.ChapterListRequest) (resp
 
 			item.LearnNum = learnNum
 			item.Total = total
+			item.SignNum = signNum
 		} else {
 			cus, err := dao.StudentIsLearnedByStudentId(c.Ctx, c.UserToken.UserId, chapter.Id)
 			if err != nil {
@@ -69,7 +79,9 @@ func ChapterListHandler(c *context.Context, req *proto.ChapterListRequest) (resp
 			}
 
 			if len(cus) > 0 {
-				item.Learned = true
+				item.Learned = cus[0].SignIn == 1 && cus[0].Status == 1
+				item.PostSignIn = cus[0].SignIn
+				item.SignIn = cus[0].Status
 				item.Score = int64(cus[0].Score)
 			}
 		}
@@ -169,14 +181,41 @@ func ChapterLearnHandler(c *context.Context, req *proto.ChapterLearnRequest) (re
 		return nil, fmt.Errorf("permission denied")
 	}
 
-	uc := models.ChapterUser{
-		UserID:    c.UserToken.UserId,
-		ChapterID: req.ChapterId,
-		InsertTm:  time.Now(),
-		UpdateTm:  time.Now(),
+	cu, err := dao.ChapterUserGetByChapterIdAndUserId(c.Ctx, c.UserToken.UserId, req.ChapterId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			cu := models.ChapterUser{
+				UserID:    c.UserToken.UserId,
+				ChapterID: req.ChapterId,
+				InsertTm:  time.Now(),
+				UpdateTm:  time.Now(),
+			}
+			err = dao.Create(c.Ctx, &cu)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		err = dao.ChapterUserUpdateByChapterIdAndUserId(c.Ctx, cu.UserID, cu.ChapterID, map[string]interface{}{})
+		if err != nil {
+
+		}
 	}
 
-	err = dao.Create(c.Ctx, &uc)
+	return
+}
+
+func ChapterDeleteHandler(c *context.Context, req *proto.ChapterDeleteRequest) (resp *proto.ChapterDeleteResponse, err error) {
+	chapterIdStr := c.Param("id")
+	chapterId, _ := strconv.Atoi(chapterIdStr)
+
+	if c.UserToken.Role != consts.RoleTeacher {
+		return nil, fmt.Errorf("permission denied")
+	}
+
+	resp = &proto.ChapterDeleteResponse{}
+
+	err = dao.ChapterDeleteById(c.Ctx, chapterId)
 	if err != nil {
 		return nil, err
 	}
@@ -184,16 +223,81 @@ func ChapterLearnHandler(c *context.Context, req *proto.ChapterLearnRequest) (re
 	return
 }
 
-func ChapterDeleteHandler(c *context.Context, req *proto.ChapterDeleteRequest) (resp *proto.ChapterDeleteResponse, err error) {
+func PostSignInHandler(c *context.Context, req *proto.PostSignInRequest) (resp *proto.PostSignInResponse, err error) {
 	if c.UserToken.Role != consts.RoleTeacher {
 		return nil, fmt.Errorf("permission denied")
 	}
 
-	resp = &proto.ChapterDeleteResponse{}
+	code := utils.RandomString(4)
 
-	err = dao.ChapterDeleteById(c.Ctx, req.Id)
+	err = cache.SetEx(c.Ctx, code, cache.SignInKey(req.ChapterId), 5*60)
+	if err != nil {
+		return
+	}
+
+	cu, err := dao.ChapterUserGetByChapterIdAndUserId(c.Ctx, c.UserToken.UserId, req.ChapterId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			cu = models.ChapterUser{
+				UserID:    c.UserToken.UserId,
+				ChapterID: req.ChapterId,
+				SignIn:    1,
+				InsertTm:  time.Now(),
+				UpdateTm:  time.Now(),
+			}
+			err = mysql.GetRds(c.Ctx).Create(&cu).Error
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	} else {
+		err = dao.ChapterUserUpdateByChapterIdAndUserId(c.Ctx, cu.UserID, cu.ChapterID, map[string]interface{}{
+			"sign_in":   1,
+			"update_tm": time.Now(),
+		})
+	}
+
+	resp = &proto.PostSignInResponse{
+		Code: code,
+	}
+
+	return
+}
+
+func SignInHandler(c *context.Context, req *proto.SignInRequest) (resp *proto.SignInResponse, err error) {
+	if c.UserToken.Role != consts.RoleStudent {
+		return nil, fmt.Errorf("permission denied")
+	}
+
+	code, err := cache.Get(c.Ctx, cache.SignInKey(req.ChapterId))
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return nil, fmt.Errorf("签到已过期")
+		}
+		return nil, err
+	}
+
+	if code != req.Code {
+		return nil, fmt.Errorf("验证码不正确")
+	}
+
+	cu, err := dao.ChapterUserGetByChapterIdAndUserId(c.Ctx, c.UserToken.UserId, req.ChapterId)
 	if err != nil {
 		return nil, err
+	}
+
+	err = dao.ChapterUserUpdateByChapterIdAndUserId(c.Ctx, cu.UserID, cu.ChapterID, map[string]interface{}{
+		"status":    1,
+		"update_tm": time.Now(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp = &proto.SignInResponse{
+		Status: "OK",
 	}
 
 	return

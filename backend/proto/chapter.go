@@ -12,10 +12,13 @@ type ChapterListResponseItem struct {
 	Name         string `json:"name"`
 	Introduction string `json:"introduction"`
 	LearnNum     int64  `json:"learn_num"`
+	SignNum      int64  `json:"sign_num"`
 	Total        int64  `json:"total"`
 	PdfUrl       string `json:"pdf_url"`
 	VideoUrl     string `json:"video_url"`
 	CreateAt     int64  `json:"create_at"`
+	SignIn       int    `json:"sign_in"`
+	PostSignIn   int    `json:"post_sign_in"`
 	Learned      bool   `json:"learned"`
 	Score        int64  `json:"score"`
 }
@@ -74,4 +77,21 @@ type ChapterDeleteRequest struct {
 }
 
 type ChapterDeleteResponse struct {
+}
+
+type PostSignInRequest struct {
+	ChapterId int `json:"chapter_id" form:"chapter_id"`
+}
+
+type PostSignInResponse struct {
+	Code string `json:"code"`
+}
+
+type SignInRequest struct {
+	ChapterId int    `json:"chapter_id" form:"chapter_id"`
+	Code      string `json:"code" form:"code"`
+}
+
+type SignInResponse struct {
+	Status string `json:"status"`
 }

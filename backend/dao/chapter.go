@@ -25,7 +25,7 @@ func ChapterUpdateById(ctx context.Context, chapterId int, data interface{}, tx 
 	}
 	err = db.Model(&models.Chapter{}).
 		Where("chapter_id = ?", chapterId).
-		UpdateColumns(data).
+		Updates(data).
 		Error
 	return
 }
@@ -36,4 +36,35 @@ func ChapterDeleteById(ctx context.Context, chapterId int) error {
 		Where("id = ?", chapterId).
 		Delete(&models.Chapter{}).
 		Error
+}
+
+func ChapterUserGetByChapterIdAndUserId(ctx context.Context, userId, chapterId int) (cu models.ChapterUser, err error) {
+	err = mysql.GetRds(ctx).
+		Model(&models.ChapterUser{}).
+		Where("user_id = ?", userId).
+		Where("chapter_id = ?", chapterId).
+		First(&cu).
+		Error
+
+	return
+}
+
+func ChapterUserUpdateByChapterIdAndUserId(ctx context.Context, userId, chapterId int, data map[string]interface{}) error {
+	return mysql.GetRds(ctx).
+		Model(&models.ChapterUser{}).
+		Where("user_id = ?", userId).
+		Where("chapter_id = ?", chapterId).
+		Updates(data).
+		Error
+}
+
+func UserSignInStatus(ctx context.Context, userId, chapterId int) (signIn bool, err error) {
+	var cu models.ChapterUser
+
+	err = mysql.GetRds(ctx).Model(&cu).Where("user_id = ? AND chapter_id = ?", userId, chapterId).First(&cu).Error
+	if err != nil {
+		return
+	}
+
+	return cu.SignIn == 1 && cu.Status == 1, nil
 }

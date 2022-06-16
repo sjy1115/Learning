@@ -18,6 +18,8 @@ func RegisterCourseRouter(router gin.IRouter) {
 		course.POST("/:course_id/sign_in", context.WrapperHandler(controllers.StudentSignIn))
 		course.POST("/upload", context.WrapperHandler(controllers.UploadCourse))
 		course.GET("/chat", context.WrapperHandler(controllers.StartChat))
+		course.POST("/post_sign_in", context.WrapperHandler(controllers.PostSignHandler))
+		course.POST("/sign_in", context.WrapperHandler(controllers.SignIn))
 	}
 	chapter := router.Group("/chapter")
 	{

@@ -3,6 +3,8 @@ package services
 import (
 	"errors"
 	"fmt"
+	"learning/pkg/chat"
+	"learning/pkg/jwt"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,9 +13,7 @@ import (
 	"learning/dao"
 	"learning/db/mysql"
 	"learning/models"
-	"learning/pkg/chat"
 	"learning/pkg/context"
-	"learning/pkg/jwt"
 	"learning/pkg/oss"
 	"learning/proto"
 	"learning/utils"
@@ -189,13 +189,16 @@ func CourseCreateHandler(c *context.Context, req *proto.CourseCreateRequest) (re
 }
 
 func CourseDeleteHandler(c *context.Context, req *proto.CourseDeleteRequest) (resp *proto.CourseDeleteResponse, err error) {
+	courseIdStr := c.Param("id")
+	courseId, _ := strconv.Atoi(courseIdStr)
+
 	if c.UserToken.Role != consts.RoleTeacher {
 		return nil, fmt.Errorf("permission denied")
 	}
 
 	resp = &proto.CourseDeleteResponse{}
 
-	err = dao.CourseDeleteById(c.Ctx, req.ID)
+	err = dao.CourseDeleteById(c.Ctx, courseId)
 	if err != nil {
 		return nil, err
 	}

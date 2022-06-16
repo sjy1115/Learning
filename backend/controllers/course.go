@@ -292,3 +292,39 @@ func StartChat(c *context.Context) {
 
 	return
 }
+
+func PostSignHandler(c *context.Context) {
+	var req proto.PostSignInRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.PostSignInHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
+
+func SignIn(c *context.Context) {
+	var req proto.SignInRequest
+
+	err := c.Bind(&req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	resp, err := services.SignInHandler(c, &req)
+	if err != nil {
+		utils.Error(c, utils.ErrorCode, err)
+		return
+	}
+
+	utils.Success(c, resp)
+}
